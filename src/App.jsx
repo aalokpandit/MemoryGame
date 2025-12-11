@@ -182,6 +182,8 @@ function App() {
   const [completionTime, setCompletionTime] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const [banner, setBanner] = useState(null); // { text: string } | null
+  const [panelEffect, setPanelEffect] = useState(null); // { index:number, type:'match'|'miss' } | null
+  const [winners, setWinners] = useState([]); // multiplayer winners at end
 
   // Multiplayer state scaffolding
   const gridSide = useMemo(() => DIFFICULTIES[difficulty].size, [difficulty]);
@@ -219,6 +221,11 @@ function App() {
       const time = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
       setCompletionTime(time);
       setIsGameWon(true);
+      if (mode === 'multi') {
+        const maxMatches = Math.max(...players.slice(0, playerCount).map(p => p.matches));
+        const w = players.slice(0, playerCount).filter(p => p.matches === maxMatches).map(p => p.name);
+        setWinners(w);
+      }
     }
   }, [cards, gameInitialized, seconds]);
 
@@ -263,6 +270,8 @@ function App() {
               setBanner({ text: `No match. Next turn!` });
               setTimeout(() => setBanner(null), 800);
           setIsBoardLocked(false);
+          setPanelEffect({ index: activePlayerIndex, type: 'match' });
+          setTimeout(() => setPanelEffect(null), 500);
           if (mode === 'multi') {
             setActivePlayerIndex((i) => (i + 1) % playerCount);
           }
@@ -279,6 +288,8 @@ function App() {
     if (!isGameStarted) {
       setIsGameStarted(true);
     }
+            setPanelEffect({ index: activePlayerIndex, type: 'miss' });
+            setTimeout(() => setPanelEffect(null), 500);
 
     const newCards = cards.map((card, index) => {
       if (index === clickedIndex) {
@@ -384,7 +395,11 @@ function App() {
           {mode === 'multi' && (
             <div className="players-corners">
               {players.slice(0, playerCount).map((p, idx) => (
-                <div key={p.id} className={`player-panel corner-${idx} ${idx === activePlayerIndex ? 'active' : ''}`} style={{ borderColor: p.color }}>
+                <div
+                  key={p.id}
+                  className={`player-panel corner-${idx} ${idx === activePlayerIndex ? 'active' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'match' ? 'pulse-match' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'miss' ? 'tint-miss' : ''}`}
+                  style={{ borderColor: p.color }}
+                >
                   <input
                     className="player-name-input"
                     value={p.name}
@@ -427,6 +442,11 @@ function App() {
                   <>
                     <h2>🎉 Game Over 🎉</h2>
                     <p>Total Time: {completionTime}</p>
+                    {winners.length > 1 ? (
+                      <p>Winners: {winners.join(', ')}</p>
+                    ) : (
+                      <p>Winner: {winners[0]}</p>
+                    )}
                   </>
                 )}
               </div>
