@@ -1,4 +1,6 @@
 /* src/App.css */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -41,43 +43,93 @@ h1 {
   background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
-.control-group {
+.control-select {
   display: flex;
   flex-direction: column;
+  gap: 4px;
   align-items: flex-start;
-  gap: 5px;
 }
 
-.control-group label {
-  font-size: 0.9rem;
+.control-select label {
+  font-size: 0.8rem;
   font-weight: bold;
   color: #333;
 }
 
-.control-group select {
+.top-controls select {
   padding: 8px 12px;
   border: 2px solid #667eea;
   border-radius: 5px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   background-color: white;
   cursor: pointer;
   transition: all 0.3s ease;
+  height: 40px;
 }
 
-.control-group select:hover:not(:disabled) {
+.top-controls select:hover:not(:disabled) {
   border-color: #764ba2;
 }
 
-.control-group select:disabled {
+.top-controls select:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.action-button {
-  padding: 10px 24px;
+.timer-display {
+  padding: 8px 12px;
+  border: 2px solid #667eea;
+  border-radius: 5px;
   font-size: 1.1rem;
+  font-weight: bold;
+  color: #667eea;
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  letter-spacing: 3px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  background: #f8f9ff;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f8f9ff;
+  border: 2px solid #667eea;
+  border-radius: 5px;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+.timer-label {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.timer-value {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #667eea;
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  letter-spacing: 3px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.action-button {
+  padding: 8px 24px;
+  font-size: 1rem;
   font-weight: bold;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -86,7 +138,7 @@ h1 {
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  margin-top: auto;
+  height: 40px;
 }
 
 .action-button:hover {
@@ -232,4 +284,14 @@ h1 {
 
 .win-screen button:active {
   transform: translateY(0);
+}
+
+.confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
 }

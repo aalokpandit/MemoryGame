@@ -177,12 +177,35 @@ function App() {
   const [isBoardLocked, setIsBoardLocked] = useState(false);
   const [isGameWon, setIsGameWon] = useState(false);
   const [gameInitialized, setGameInitialized] = useState(false);
+  const [isGameStarted, setIsGameStarted] = useState(false);
+  const [completionTime, setCompletionTime] = useState(0);
+  const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
-    if (cards.length > 0 && cards.every(card => card.isMatched)) {
+    if (!isGameStarted || isGameWon) return;
+
+    const interval = setInterval(() => {
+      setSeconds((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isGameStarted, isGameWon]);
+
+  useEffect(() => {
+    if (!isGameStarted) {
+      setSeconds(0);
+    }
+  }, [isGameStarted]);
+
+  useEffect(() => {
+    if (gameInitialized && cards.length > 0 && cards.every(card => card.isMatched)) {
+      const minutes = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      const time = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      setCompletionTime(time);
       setIsGameWon(true);
     }
-  }, [cards]);
+  }, [cards, gameInitialized, seconds]);
 
   useEffect(() => {
     if (flippedCards.length === 2) {
@@ -217,6 +240,10 @@ function App() {
       return;
     }
 
+    if (!isGameStarted) {
+      setIsGameStarted(true);
+    }
+
     const newCards = cards.map((card, index) => {
       if (index === clickedIndex) {
         return { ...card, isFlipped: true };
@@ -235,6 +262,8 @@ function App() {
     setFlippedCards([]);
     setIsBoardLocked(false);
     setIsGameWon(false);
+    setIsGameStarted(false);
+    setCompletionTime(0);
   };
 
   const resetGame = () => {
@@ -243,17 +272,24 @@ function App() {
     setFlippedCards([]);
     setIsBoardLocked(false);
     setIsGameWon(false);
+    setIsGameStarted(false);
+    setCompletionTime(0);
+    setSeconds(0);
   };
 
   const gridSize = DIFFICULTIES[difficulty].size;
   const actionLabel = !gameInitialized ? 'Start Game' : isGameWon ? 'Play Another Game' : 'Reset';
   const actionHandler = !gameInitialized ? startGame : (isGameWon ? resetGame : resetGame);
 
+  const minutes = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  const formattedTime = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
   return (
     <div className="game-container">
       <h1>Memory Game</h1>
       <div className="top-controls">
-        <div className="control-group">
+        <div className="control-select">
           <label>Difficulty:</label>
           <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} disabled={gameInitialized}>
             <option value="easy">Easy (4x4)</option>
@@ -261,7 +297,7 @@ function App() {
             <option value="hard">Hard (8x8)</option>
           </select>
         </div>
-        <div className="control-group">
+        <div className="control-select">
           <label>Theme:</label>
           <select value={theme} onChange={(e) => setTheme(e.target.value)} disabled={gameInitialized}>
             <option value="animals">Animals</option>
@@ -270,7 +306,14 @@ function App() {
             <option value="objects">Everyday Objects</option>
           </select>
         </div>
-        <button onClick={actionHandler} className="action-button">{actionLabel}</button>
+        <div className="control-select">
+          <label>Time:</label>
+          <div className="timer-display">{formattedTime}</div>
+        </div>
+        <div className="control-select">
+          <label>&nbsp;</label>
+          <button onClick={actionHandler} className="action-button">{actionLabel}</button>
+        </div>
       </div>
       {gameInitialized && (
         <div className="board-container">
@@ -278,7 +321,7 @@ function App() {
           {isGameWon && (
             <div className="win-overlay">
               <div className="win-screen">
-                <h2>You Win!</h2>
+                <h2>🎉 Congrats! You completed the game in {completionTime} 🎉</h2>
               </div>
             </div>
           )}
