@@ -247,7 +247,7 @@ function App() {
 
   const gridSize = DIFFICULTIES[difficulty].size;
   const actionLabel = !gameInitialized ? 'Start Game' : isGameWon ? 'Play Another Game' : 'Reset';
-  const actionHandler = !gameInitialized ? startGame : (isGameWon ? startGame : resetGame);
+  const actionHandler = !gameInitialized ? startGame : (isGameWon ? resetGame : resetGame);
 
   return (
     <div className="game-container">
@@ -275,7 +275,6 @@ function App() {
       {isGameWon ? (
         <div className="win-screen">
           <h2>You Win!</h2>
-          <button onClick={actionHandler}>Play Another Game</button>
         </div>
       ) : (
         gameInitialized && <Board cards={cards} onCardClick={handleCardClick} gridSize={gridSize} />
