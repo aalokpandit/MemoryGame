@@ -205,6 +205,37 @@ h1 {
 .player-panel.active {
   box-shadow: 0 0 10px 2px rgba(102,126,234,0.4);
 }
+.player-panel.pulse-match {
+  animation: pulse 400ms ease-in-out;
+}
+.player-panel.tint-miss {
+  animation: miss 500ms ease-in-out;
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); box-shadow: 0 0 14px 3px rgba(102,126,234,0.55); }
+  100% { transform: scale(1); }
+}
+@keyframes miss {
+  0% { box-shadow: 0 0 0 0 rgba(234,102,102,0.0); }
+  50% { box-shadow: 0 0 12px 2px rgba(234,102,102,0.4); }
+  100% { box-shadow: 0 0 0 0 rgba(234,102,102,0.0); }
+}
+
+.inline-banner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255,255,255,0.92);
+  color: #333;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 2px solid #667eea;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  pointer-events: none;
+}
 .corner-0 { top: 8px; left: 8px; }
 .corner-1 { top: 8px; right: 8px; }
 .corner-2 { bottom: 8px; left: 8px; }

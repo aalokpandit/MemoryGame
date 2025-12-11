@@ -181,6 +181,7 @@ function App() {
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [completionTime, setCompletionTime] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  const [banner, setBanner] = useState(null); // { text: string } | null
 
   // Multiplayer state scaffolding
   const gridSide = useMemo(() => DIFFICULTIES[difficulty].size, [difficulty]);
@@ -243,6 +244,8 @@ function App() {
               matchedItems: [...next[activePlayerIndex].matchedItems, matchedName],
             };
             return next;
+            setBanner({ text: `${players[activePlayerIndex].name} matched ${cards[first].value}!` });
+            setTimeout(() => setBanner(null), 1000);
           });
           // Keep turn on match
         }
@@ -257,6 +260,8 @@ function App() {
             return card;
           }));
           setFlippedCards([]);
+              setBanner({ text: `No match. Next turn!` });
+              setTimeout(() => setBanner(null), 800);
           setIsBoardLocked(false);
           if (mode === 'multi') {
             setActivePlayerIndex((i) => (i + 1) % playerCount);
@@ -410,6 +415,9 @@ function App() {
             </div>
           )}
           <Board cards={cards} onCardClick={handleCardClick} gridSize={gridSize} />
+          {banner && (
+            <div className="inline-banner" role="status" aria-live="polite">{banner.text}</div>
+          )}
           {isGameWon && (
             <div className="win-overlay">
               <div className="win-screen">
