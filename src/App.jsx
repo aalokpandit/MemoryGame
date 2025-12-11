@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Board from './components/Board';
 import './App.css';
 
@@ -170,6 +170,7 @@ function generateCards(theme, pairsCount) {
 }
 
 function App() {
+  const [mode, setMode] = useState('single'); // 'single' | 'multi'
   const [difficulty, setDifficulty] = useState('easy');
   const [theme, setTheme] = useState('animals');
   const [cards, setCards] = useState([]);
@@ -181,6 +182,19 @@ function App() {
   const [completionTime, setCompletionTime] = useState(0);
   const [seconds, setSeconds] = useState(0);
 
+  // Multiplayer state scaffolding
+  const gridSide = useMemo(() => DIFFICULTIES[difficulty].size, [difficulty]);
+  const maxPlayers = useMemo(() => Math.max(2, Math.floor(gridSide / 2)), [gridSide]);
+  const [playerCount, setPlayerCount] = useState(2);
+  const playerColors = ['#FF6B6B', '#4ECDC4', '#C7F464', '#C44DFF'];
+  const [players, setPlayers] = useState([
+    { id: 1, name: 'Player 1', color: playerColors[0], matches: 0, matchedItems: [] },
+    { id: 2, name: 'Player 2', color: playerColors[1], matches: 0, matchedItems: [] },
+  ]);
+  const [activePlayerIndex, setActivePlayerIndex] = useState(0);
+  const [isPlayersLocked, setIsPlayersLocked] = useState(false);
+
+  // Timer runs always during a game, but we only display in single mode
   useEffect(() => {
     if (!isGameStarted || isGameWon) return;
 
@@ -264,6 +278,13 @@ function App() {
     setIsGameWon(false);
     setIsGameStarted(false);
     setCompletionTime(0);
+    setSeconds(0);
+    if (mode === 'multi') {
+      setIsPlayersLocked(true);
+      setActivePlayerIndex(Math.floor(Math.random() * playerCount));
+    } else {
+      setIsPlayersLocked(false);
+    }
   };
 
   const resetGame = () => {
@@ -275,6 +296,15 @@ function App() {
     setIsGameStarted(false);
     setCompletionTime(0);
     setSeconds(0);
+    setIsPlayersLocked(false);
+    setPlayers(prev => prev.slice(0, playerCount).map((p, i) => ({
+      id: i + 1,
+      name: p.name,
+      color: p.color,
+      matches: 0,
+      matchedItems: [],
+    })));
+    setActivePlayerIndex(0);
   };
 
   const gridSize = DIFFICULTIES[difficulty].size;
@@ -289,6 +319,10 @@ function App() {
     <div className="game-container">
       <h1>Memory Game</h1>
       <div className="top-controls">
+        <div className="mode-tabs" aria-label="Game mode">
+          <button className={mode === 'single' ? 'tab active' : 'tab'} onClick={() => { if (!isGameStarted) setMode('single'); }} disabled={isGameStarted}>Single Player</button>
+          <button className={mode === 'multi' ? 'tab active' : 'tab'} onClick={() => { if (!isGameStarted) setMode('multi'); }} disabled={isGameStarted}>Multi Player</button>
+        </div>
         <div className="control-select">
           <label>Difficulty:</label>
           <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} disabled={gameInitialized}>
@@ -306,10 +340,18 @@ function App() {
             <option value="objects">Everyday Objects</option>
           </select>
         </div>
-        <div className="control-select">
-          <label>Time:</label>
-          <div className="timer-display">{formattedTime}</div>
-        </div>
+        {mode === 'single' ? (
+          <div className="control-select">
+            <label>Time:</label>
+            <div className="timer-display">{formattedTime}</div>
+          </div>
+        ) : (
+          <div className="control-select">
+            <label>Players:</label>
+            <input type="number" min={2} max={maxPlayers} value={playerCount} onChange={(e) => setPlayerCount(Math.min(Math.max(Number(e.target.value), 2), maxPlayers))} disabled={gameInitialized} />
+            <div className="helper-text">Max {maxPlayers} for {gridSide}×{gridSide}</div>
+          </div>
+        )}
         <div className="control-select">
           <label>&nbsp;</label>
           <button onClick={actionHandler} className="action-button">{actionLabel}</button>
@@ -317,11 +359,49 @@ function App() {
       </div>
       {gameInitialized && (
         <div className="board-container">
+          {mode === 'multi' && (
+            <div className="players-corners">
+              {players.slice(0, playerCount).map((p, idx) => (
+                <div key={p.id} className={`player-panel corner-${idx} ${idx === activePlayerIndex ? 'active' : ''}`} style={{ borderColor: p.color }}>
+                  <input
+                    className="player-name-input"
+                    value={p.name}
+                    maxLength={10}
+                    onChange={(e) => {
+                      if (isPlayersLocked) return;
+                      const newName = e.target.value;
+                      setPlayers(prev => {
+                        const next = [...prev];
+                        next[idx] = { ...next[idx], name: newName };
+                        return next;
+                      });
+                    }}
+                    disabled={isPlayersLocked}
+                  />
+                  <div className="player-stats">
+                    <span className="matches-count">Matches: {p.matches}</span>
+                  </div>
+                  <div className="matched-list">
+                    {p.matchedItems.map((m) => (
+                      <div key={m} className="matched-item">{m}</div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
           <Board cards={cards} onCardClick={handleCardClick} gridSize={gridSize} />
           {isGameWon && (
             <div className="win-overlay">
               <div className="win-screen">
-                <h2>🎉 Congrats! You completed the game in {completionTime} 🎉</h2>
+                {mode === 'single' ? (
+                  <h2>🎉 Congrats! You completed the game in {completionTime} 🎉</h2>
+                ) : (
+                  <>
+                    <h2>🎉 Game Over 🎉</h2>
+                    <p>Total Time: {completionTime}</p>
+                  </>
+                )}
               </div>
             </div>
           )}
