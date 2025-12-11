@@ -232,6 +232,20 @@ function App() {
           }
           return card;
         }));
+        // Update current player's stats in multi mode
+        if (mode === 'multi') {
+          const matchedName = cards[first].value;
+          setPlayers(prev => {
+            const next = [...prev];
+            next[activePlayerIndex] = {
+              ...next[activePlayerIndex],
+              matches: next[activePlayerIndex].matches + 1,
+              matchedItems: [...next[activePlayerIndex].matchedItems, matchedName],
+            };
+            return next;
+          });
+          // Keep turn on match
+        }
         setFlippedCards([]);
         setIsBoardLocked(false);
       } else {
@@ -244,6 +258,9 @@ function App() {
           }));
           setFlippedCards([]);
           setIsBoardLocked(false);
+          if (mode === 'multi') {
+            setActivePlayerIndex((i) => (i + 1) % playerCount);
+          }
         }, 1000);
       }
     }
@@ -370,9 +387,11 @@ function App() {
                     onChange={(e) => {
                       if (isPlayersLocked) return;
                       const newName = e.target.value;
+                      // Enforce unique names (case-insensitive)
                       setPlayers(prev => {
                         const next = [...prev];
-                        next[idx] = { ...next[idx], name: newName };
+                        const exists = next.some((pl, i) => i !== idx && pl.name.toLowerCase() === newName.toLowerCase());
+                        next[idx] = { ...next[idx], name: exists ? next[idx].name : newName };
                         return next;
                       });
                     }}
