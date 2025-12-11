@@ -272,12 +272,17 @@ function App() {
         </div>
         <button onClick={actionHandler} className="action-button">{actionLabel}</button>
       </div>
-      {isGameWon ? (
-        <div className="win-screen">
-          <h2>You Win!</h2>
+      {gameInitialized && (
+        <div className="board-container">
+          <Board cards={cards} onCardClick={handleCardClick} gridSize={gridSize} />
+          {isGameWon && (
+            <div className="win-overlay">
+              <div className="win-screen">
+                <h2>You Win!</h2>
+              </div>
+            </div>
+          )}
         </div>
-      ) : (
-        gameInitialized && <Board cards={cards} onCardClick={handleCardClick} gridSize={gridSize} />
       )}
     </div>
   );
