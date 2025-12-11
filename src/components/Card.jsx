@@ -10,10 +10,10 @@ function Card({ card, onClick }) {
   };
 
   return (
-    <div className={`card ${isFlipped || isMatched ? 'flipped' : ''}`} onClick={handleClick}>
+    <div className="card" onClick={handleClick}>
       <div className="card-inner" style={{ transform: isFlipped || isMatched ? 'rotateY(180deg)' : 'rotateY(0deg)' }}>
-        <div className="card-front"></div>
-        <div className="card-back" style={{ backgroundColor: color }}>
+        <div className="card-face card-back"></div>
+        <div className="card-face card-front" style={{ backgroundColor: color }}>
           {value}
         </div>
       </div>
