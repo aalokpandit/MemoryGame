@@ -1,16 +1,78 @@
-# React + Vite
+# Memory Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A feature-rich memory card matching game built with React and Vite.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Game Modes
+- **Multiple Themes**: Choose from 4 different themes with 32 unique items each
+  - Animals
+  - Fruits & Vegetables
+  - Vehicles & Transport
+  - Everyday Objects
 
-## React Compiler
+### Difficulty Levels
+- **Easy**: 4×4 grid (8 pairs)
+- **Medium**: 6×6 grid (18 pairs)
+- **Hard**: 8×8 grid (32 pairs)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Gameplay Features
+- **Timer**: Tracks your completion time from first card flip to game completion
+- **Dynamic Grid**: Automatically scales to fit your screen while maintaining square cards
+- **Card Flip Animation**: Smooth 3D flip transitions
+- **Colored Cards**: Each item has its own unique color with contrasting text for readability
+- **Win Detection**: Automatically detects when all pairs are matched
+- **Celebration**: Win screen with completion time and celebration emojis
 
-## Expanding the ESLint configuration
+### Technical Features
+- Responsive design that fits any screen size
+- Fisher-Yates shuffle algorithm for random card distribution
+- Optimized React components with memo() for better performance
+- Clean, modern UI with gradient backgrounds
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Getting Started
+
+### Installation
+
+```bash
+npm install
+```
+
+### Development
+
+```bash
+npm run dev
+```
+
+### Build
+
+```bash
+npm run build
+```
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+## How to Play
+
+1. Select your preferred difficulty level and theme
+2. Click "Start Game" to begin
+3. Click on cards to flip them and reveal the items
+4. Match pairs of identical items
+5. The timer starts when you flip your first card
+6. Complete all pairs to win and see your time!
+7. Click "Play Another Game" to try again with different settings
+
+## Technologies Used
+
+- React 19.2.0
+- Vite 7.2.4
+- CSS3 (Grid, Flexbox, Animations)
+- Google Fonts (Roboto Mono)
+
+## License
+
+This project is open source and available under the MIT License.
