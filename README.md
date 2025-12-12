@@ -5,6 +5,7 @@ A feature-rich memory card matching game built with React and Vite.
 ## Features
 
 ### Game Modes
+- **Single Player & Multiplayer**: Solo mode with timer, or multiplayer with turn-taking and player stats
 - **Multiple Themes**: Choose from 4 different themes with 32 unique items each
   - Animals
   - Fruits & Vegetables
@@ -23,6 +24,13 @@ A feature-rich memory card matching game built with React and Vite.
 - **Colored Cards**: Each item has its own unique color with contrasting text for readability
 - **Win Detection**: Automatically detects when all pairs are matched
 - **Celebration**: Win screen with completion time and celebration emojis
+
+### Multiplayer Mode
+- **Players**: 2–4 players, capped by difficulty (max 2 on 4×4, 3 on 6×6, 4 on 8×8)
+- **Names**: Each player has a unique name (max 10 chars) entered before starting; names are locked once play begins
+- **Turn Logic**: A random player starts; matching keeps the turn, missing passes to the next player
+- **Panels**: Four corner panels show active highlight, dim inactive players, and track matches plus matched item list
+- **Winners**: Highest match count wins; ties are handled and reported; timer is shown on the end screen (hidden during multiplayer play)
 
 ### Technical Features
 - Responsive design that fits any screen size
