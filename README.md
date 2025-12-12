@@ -32,6 +32,15 @@ A feature-rich memory card matching game built with React and Vite.
 - **Panels**: Four corner panels show active highlight, dim inactive players, and track matches plus matched item list
 - **Winners**: Highest match count wins; ties are handled and reported; timer is shown on the end screen (hidden during multiplayer play)
 
+## Recent Refactors & Optimizations
+
+- **Lean App component**: Moved large constants and utilities out of `src/App.jsx`.
+- **Stable win detection**: Effect now depends on `mode`, `players`, and `playerCount` to avoid stale winners.
+- **Safer clicks**: Card click handler guards invalid indices and states.
+- **Cleaner classes**: Centralized player panel classes via a helper.
+- **Responsive board**: Card size recalculates on window resize for consistent layout.
+- **Player clamping**: `playerCount` and active index auto-clamp when difficulty reduces max players.
+
 ### Technical Features
 - Responsive design that fits any screen size
 - Fisher-Yates shuffle algorithm for random card distribution
@@ -80,6 +89,25 @@ npm run preview
 - Vite 7.2.4
 - CSS3 (Grid, Flexbox, Animations)
 - Google Fonts (Roboto Mono)
+
+## Project Structure
+
+- `src/App.jsx`: Game logic, state management, and layout
+- `src/components/Board.jsx` / `Card.jsx`: Grid and card rendering (memoized)
+- `src/data/themes.js`: Theme definitions and colors
+- `src/constants/difficulties.js`: Grid sizes and pair counts
+- `src/utils/cards.js`: Card generation and shuffle utilities
+
+## Development
+
+Start a local dev server:
+
+```powershell
+cd c:\Projects\MemoryGame\memory-game
+npm run dev -- --host --port 5173
+```
+
+If port 5173 is busy, Vite will pick another port and report it in the terminal.
 
 ## License
 
