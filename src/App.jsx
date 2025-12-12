@@ -401,7 +401,7 @@ function App() {
             {players.map((p, idx) => (
               <div
                 key={p.id}
-                className={`player-panel corner-${idx} ${idx < playerCount ? 'panel-active' : 'panel-inactive'} ${idx === activePlayerIndex && idx < playerCount && isGameStarted ? 'active' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'match' ? 'pulse-match' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'miss' ? 'tint-miss' : ''}`}
+                className={`player-panel corner-${idx} ${idx < playerCount ? 'panel-active' : 'panel-inactive'} ${idx === activePlayerIndex && idx < playerCount && isGameStarted ? 'active' : ''} ${idx !== activePlayerIndex && idx < playerCount && isGameStarted ? 'dimmed' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'match' ? 'pulse-match' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'miss' ? 'tint-miss' : ''}`}
                 style={{ borderColor: p.color }}
               >
                 <input
