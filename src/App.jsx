@@ -1,173 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import Board from './components/Board';
+import { THEMES } from './data/themes';
+import { DIFFICULTIES } from './constants/difficulties';
+import { generateCards } from './utils/cards';
 import './App.css';
-
-const THEMES = {
-  animals: [
-    { name: 'Dog', color: '#FF5733' },
-    { name: 'Cat', color: '#33FF57' },
-    { name: 'Cow', color: '#3357FF' },
-    { name: 'Lion', color: '#FF33A1' },
-    { name: 'Bear', color: '#F3FF33' },
-    { name: 'Duck', color: '#A133FF' },
-    { name: 'Panda', color: '#33FFA1' },
-    { name: 'Tiger', color: '#FF9F33' },
-    { name: 'Elephant', color: '#FF6B9D' },
-    { name: 'Fox', color: '#C70039' },
-    { name: 'Wolf', color: '#900C3F' },
-    { name: 'Rabbit', color: '#581845' },
-    { name: 'Deer', color: '#FFC300' },
-    { name: 'Giraffe', color: '#DAF7A6' },
-    { name: 'Zebra', color: '#33FFD5' },
-    { name: 'Monkey', color: '#3385FF' },
-    { name: 'Horse', color: '#8E44AD' },
-    { name: 'Sheep', color: '#E74C3C' },
-    { name: 'Goat', color: '#16A085' },
-    { name: 'Pig', color: '#F39C12' },
-    { name: 'Chicken', color: '#D35400' },
-    { name: 'Eagle', color: '#7D3C98' },
-    { name: 'Owl', color: '#2874A6' },
-    { name: 'Penguin', color: '#148F77' },
-    { name: 'Dolphin', color: '#D98880' },
-    { name: 'Whale', color: '#C39BD3' },
-    { name: 'Shark', color: '#76D7C4' },
-    { name: 'Turtle', color: '#F8C471' },
-    { name: 'Frog', color: '#82E0AA' },
-    { name: 'Snake', color: '#AED6F1' },
-    { name: 'Lizard', color: '#F9E79F' },
-    { name: 'Butterfly', color: '#FADBD8' },
-  ],
-  fruits: [
-    { name: 'Apple', color: '#FF0800' },
-    { name: 'Banana', color: '#FFE135' },
-    { name: 'Orange', color: '#FFA500' },
-    { name: 'Grape', color: '#6F2DA8' },
-    { name: 'Strawberry', color: '#FC5A8D' },
-    { name: 'Watermelon', color: '#FC6C85' },
-    { name: 'Pineapple', color: '#FDD017' },
-    { name: 'Mango', color: '#FDBE02' },
-    { name: 'Cherry', color: '#DE3163' },
-    { name: 'Blueberry', color: '#4F86F7' },
-    { name: 'Peach', color: '#FFE5B4' },
-    { name: 'Pear', color: '#D1E231' },
-    { name: 'Kiwi', color: '#8EE53F' },
-    { name: 'Lemon', color: '#FFF44F' },
-    { name: 'Lime', color: '#BFFF00' },
-    { name: 'Coconut', color: '#8B4513' },
-    { name: 'Papaya', color: '#FFEFD5' },
-    { name: 'Avocado', color: '#568203' },
-    { name: 'Tomato', color: '#FF6347' },
-    { name: 'Carrot', color: '#ED9121' },
-    { name: 'Broccoli', color: '#4E8B3D' },
-    { name: 'Corn', color: '#FBEC5D' },
-    { name: 'Cucumber', color: '#39FF14' },
-    { name: 'Eggplant', color: '#614051' },
-    { name: 'Lettuce', color: '#90EE90' },
-    { name: 'Onion', color: '#E6E6FA' },
-    { name: 'Pepper', color: '#FF033E' },
-    { name: 'Potato', color: '#D2B48C' },
-    { name: 'Pumpkin', color: '#FF7518' },
-    { name: 'Radish', color: '#E30B5C' },
-    { name: 'Spinach', color: '#097969' },
-    { name: 'Zucchini', color: '#228B22' },
-  ],
-  vehicles: [
-    { name: 'Car', color: '#FF0000' },
-    { name: 'Bus', color: '#FFD700' },
-    { name: 'Train', color: '#4169E1' },
-    { name: 'Plane', color: '#87CEEB' },
-    { name: 'Bike', color: '#32CD32' },
-    { name: 'Truck', color: '#FF4500' },
-    { name: 'Boat', color: '#1E90FF' },
-    { name: 'Ship', color: '#000080' },
-    { name: 'Helicopter', color: '#FF6347' },
-    { name: 'Motorcycle', color: '#FF1493' },
-    { name: 'Scooter', color: '#00CED1' },
-    { name: 'Taxi', color: '#FFFF00' },
-    { name: 'Ambulance', color: '#FF0000' },
-    { name: 'FireTruck', color: '#DC143C' },
-    { name: 'PoliceCar', color: '#0000FF' },
-    { name: 'Van', color: '#708090' },
-    { name: 'Subway', color: '#A9A9A9' },
-    { name: 'Tram', color: '#FFB6C1' },
-    { name: 'Yacht', color: '#FFFFFF' },
-    { name: 'Canoe', color: '#8B4513' },
-    { name: 'Jet', color: '#C0C0C0' },
-    { name: 'Rocket', color: '#FF4500' },
-    { name: 'Balloon', color: '#FF69B4' },
-    { name: 'Parachute', color: '#00FFFF' },
-    { name: 'Skateboard', color: '#FF8C00' },
-    { name: 'Rollerblade', color: '#9370DB' },
-    { name: 'Segway', color: '#20B2AA' },
-    { name: 'Cart', color: '#DAA520' },
-    { name: 'Wagon', color: '#CD853F' },
-    { name: 'Sled', color: '#F0E68C' },
-    { name: 'Snowmobile', color: '#E0FFFF' },
-    { name: 'Hovercraft', color: '#B0C4DE' },
-  ],
-  objects: [
-    { name: 'Book', color: '#8B4513' },
-    { name: 'Pen', color: '#0000FF' },
-    { name: 'Cup', color: '#FF69B4' },
-    { name: 'Phone', color: '#000000' },
-    { name: 'Laptop', color: '#C0C0C0' },
-    { name: 'Watch', color: '#FFD700' },
-    { name: 'Glasses', color: '#A0522D' },
-    { name: 'Key', color: '#FFD700' },
-    { name: 'Wallet', color: '#654321' },
-    { name: 'Bag', color: '#FF6347' },
-    { name: 'Shoe', color: '#1E90FF' },
-    { name: 'Hat', color: '#FF4500' },
-    { name: 'Clock', color: '#2F4F4F' },
-    { name: 'Lamp', color: '#FFFFE0' },
-    { name: 'Chair', color: '#8B4513' },
-    { name: 'Table', color: '#D2691E' },
-    { name: 'Mirror', color: '#E0E0E0' },
-    { name: 'Picture', color: '#DAA520' },
-    { name: 'Vase', color: '#4682B4' },
-    { name: 'Pillow', color: '#FFF8DC' },
-    { name: 'Blanket', color: '#CD853F' },
-    { name: 'Candle', color: '#FFFACD' },
-    { name: 'Plate', color: '#FFFFFF' },
-    { name: 'Fork', color: '#C0C0C0' },
-    { name: 'Spoon', color: '#C0C0C0' },
-    { name: 'Knife', color: '#808080' },
-    { name: 'Bowl', color: '#ADD8E6' },
-    { name: 'Bottle', color: '#00FF00' },
-    { name: 'Scissors', color: '#FF0000' },
-    { name: 'Tape', color: '#FFFF00' },
-    { name: 'Stapler', color: '#000000' },
-    { name: 'Notebook', color: '#87CEEB' },
-  ],
-};
-
-const DIFFICULTIES = {
-  easy: { size: 4, pairs: 8 },
-  medium: { size: 6, pairs: 18 },
-  hard: { size: 8, pairs: 32 },
-};
-
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
-
-function generateCards(theme, pairsCount) {
-  const themeItems = THEMES[theme];
-  const shuffledItems = shuffle([...themeItems]);
-  const selectedItems = shuffledItems.slice(0, pairsCount);
-  
-  const cards = [];
-  let id = 1;
-  for (const item of selectedItems) {
-    cards.push({ id: id++, value: item.name, color: item.color, isFlipped: false, isMatched: false });
-    cards.push({ id: id++, value: item.name, color: item.color, isFlipped: false, isMatched: false });
-  }
-  return shuffle(cards);
-}
 
 function App() {
   const [mode, setMode] = useState('single'); // 'single' | 'multi'
@@ -199,6 +35,16 @@ function App() {
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
   const [isPlayersLocked, setIsPlayersLocked] = useState(false);
 
+  // When difficulty changes, clamp playerCount and active index within range
+  useEffect(() => {
+    if (playerCount > maxPlayers) {
+      setPlayerCount(maxPlayers);
+    }
+    if (activePlayerIndex >= maxPlayers) {
+      setActivePlayerIndex(0);
+    }
+  }, [maxPlayers]);
+
   // Timer runs always during a game, but we only display in single mode
   useEffect(() => {
     if (!isGameStarted || isGameWon) return;
@@ -217,19 +63,22 @@ function App() {
   }, [isGameStarted]);
 
   useEffect(() => {
-    if (gameInitialized && cards.length > 0 && cards.every(card => card.isMatched)) {
-      const minutes = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      const time = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-      setCompletionTime(time);
-      setIsGameWon(true);
-      if (mode === 'multi') {
-        const maxMatches = Math.max(...players.slice(0, playerCount).map(p => p.matches));
-        const w = players.slice(0, playerCount).filter(p => p.matches === maxMatches).map(p => p.name);
-        setWinners(w);
-      }
+    if (!gameInitialized || cards.length === 0) return;
+    if (!cards.every(card => card.isMatched)) return;
+
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    const time = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    setCompletionTime(time);
+    setIsGameWon(true);
+
+    if (mode === 'multi') {
+      const activePlayers = players.slice(0, playerCount);
+      const maxMatches = Math.max(...activePlayers.map(p => p.matches));
+      const w = activePlayers.filter(p => p.matches === maxMatches).map(p => p.name);
+      setWinners(w);
     }
-  }, [cards, gameInitialized, seconds]);
+  }, [cards, gameInitialized, seconds, mode, players, playerCount]);
 
   useEffect(() => {
     if (flippedCards.length !== 2) return;
@@ -296,7 +145,9 @@ function App() {
   }, [flippedCards, cards, mode, activePlayerIndex, playerCount, players]);
 
   const handleCardClick = (clickedIndex) => {
-    if (isBoardLocked || flippedCards.length === 2 || cards[clickedIndex].isFlipped || cards[clickedIndex].isMatched) {
+    const card = cards[clickedIndex];
+    if (!card) return; // guard stale indices
+    if (isBoardLocked || flippedCards.length === 2 || card.isFlipped || card.isMatched) {
       return;
     }
 
@@ -363,6 +214,24 @@ function App() {
   const minutes = Math.floor(seconds / 60);
   const secs = seconds % 60;
   const formattedTime = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+  const getPanelClass = (idx) => {
+    const isActivePlayer = idx === activePlayerIndex && idx < playerCount && gameInitialized;
+    const isDimmedTurn = idx < playerCount && gameInitialized && idx !== activePlayerIndex;
+    const isPreStartDim = idx < playerCount && !gameInitialized;
+    const isMatchEffect = panelEffect && panelEffect.index === idx && panelEffect.type === 'match';
+    const isMissEffect = panelEffect && panelEffect.index === idx && panelEffect.type === 'miss';
+
+    return [
+      'player-panel',
+      idx < playerCount ? 'panel-active' : 'panel-inactive',
+      isActivePlayer ? 'active' : '',
+      isDimmedTurn ? 'dimmed' : '',
+      isPreStartDim ? 'dimmed' : '',
+      isMatchEffect ? 'pulse-match' : '',
+      isMissEffect ? 'tint-miss' : '',
+    ].filter(Boolean).join(' ');
+  };
 
   return (
     <div className="game-container">
@@ -433,7 +302,7 @@ function App() {
                   style={{ borderColor: p.color }}
                 />
                 <div
-                  className={`player-panel ${idx < playerCount ? 'panel-active' : 'panel-inactive'} ${idx === activePlayerIndex && idx < playerCount && gameInitialized ? 'active' : ''} ${idx < playerCount && gameInitialized && idx !== activePlayerIndex ? 'dimmed' : ''} ${idx < playerCount && !gameInitialized ? 'dimmed' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'match' ? 'pulse-match' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'miss' ? 'tint-miss' : ''}`}
+                  className={getPanelClass(idx)}
                   style={{ borderColor: p.color, '--panel-color': p.color }}
                 >
                   <div className="player-stats">
