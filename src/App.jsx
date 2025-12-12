@@ -232,55 +232,68 @@ function App() {
   }, [cards, gameInitialized, seconds]);
 
   useEffect(() => {
-    if (flippedCards.length === 2) {
-      setIsBoardLocked(true);
-      const [first, second] = flippedCards;
-      if (cards[first].value === cards[second].value) {
-        setCards(prev => prev.map(card => {
-          if (card.id === cards[first].id || card.id === cards[second].id) {
-            return { ...card, isMatched: true, isFlipped: false };
+    if (flippedCards.length !== 2) return;
+
+    setIsBoardLocked(true);
+    const [first, second] = flippedCards;
+    const firstCard = cards[first];
+    const secondCard = cards[second];
+    if (!firstCard || !secondCard) {
+      setFlippedCards([]);
+      setIsBoardLocked(false);
+      return;
+    }
+
+    if (firstCard.value === secondCard.value) {
+      setCards(prev => prev.map((card, idx) => {
+        if (idx === first || idx === second) {
+          return { ...card, isMatched: true, isFlipped: false };
+        }
+        return card;
+      }));
+
+      if (mode === 'multi') {
+        const matchedName = firstCard.value;
+        const currentName = players[activePlayerIndex]?.name || `Player ${activePlayerIndex + 1}`;
+        setPlayers(prev => {
+          const next = [...prev];
+          next[activePlayerIndex] = {
+            ...next[activePlayerIndex],
+            matches: next[activePlayerIndex].matches + 1,
+            matchedItems: [...next[activePlayerIndex].matchedItems, matchedName],
+          };
+          return next;
+        });
+        setBanner({ text: `${currentName} matched ${matchedName}! Goes again.` });
+        setTimeout(() => setBanner(null), 1200);
+        setPanelEffect({ index: activePlayerIndex, type: 'match' });
+        setTimeout(() => setPanelEffect(null), 500);
+      }
+
+      setFlippedCards([]);
+      setIsBoardLocked(false);
+    } else {
+      setTimeout(() => {
+        setCards(prev => prev.map((card, idx) => {
+          if (idx === first || idx === second) {
+            return { ...card, isFlipped: false };
           }
           return card;
         }));
-        // Update current player's stats in multi mode
-        if (mode === 'multi') {
-          const matchedName = cards[first].value;
-          setPlayers(prev => {
-            const next = [...prev];
-            next[activePlayerIndex] = {
-              ...next[activePlayerIndex],
-              matches: next[activePlayerIndex].matches + 1,
-              matchedItems: [...next[activePlayerIndex].matchedItems, matchedName],
-            };
-            return next;
-            setBanner({ text: `${players[activePlayerIndex].name} matched ${cards[first].value}!` });
-            setTimeout(() => setBanner(null), 1000);
-          });
-          // Keep turn on match
-        }
         setFlippedCards([]);
         setIsBoardLocked(false);
-      } else {
-        setTimeout(() => {
-          setCards(prev => prev.map((card, index) => {
-            if (index === first || index === second) {
-              return { ...card, isFlipped: false };
-            }
-            return card;
-          }));
-          setFlippedCards([]);
-              setBanner({ text: `No match. Next turn!` });
-              setTimeout(() => setBanner(null), 800);
-          setIsBoardLocked(false);
-          setPanelEffect({ index: activePlayerIndex, type: 'match' });
+        if (mode === 'multi') {
+          const nextIndex = (activePlayerIndex + 1) % playerCount;
+          const nextName = players[nextIndex]?.name || `Player ${nextIndex + 1}`;
+          setPanelEffect({ index: activePlayerIndex, type: 'miss' });
           setTimeout(() => setPanelEffect(null), 500);
-          if (mode === 'multi') {
-            setActivePlayerIndex((i) => (i + 1) % playerCount);
-          }
-        }, 1000);
-      }
+          setActivePlayerIndex(nextIndex);
+          setBanner({ text: `${nextName}'s turn.` });
+          setTimeout(() => setBanner(null), 1200);
+        }
+      }, 1000);
     }
-  }, [flippedCards, cards]);
+  }, [flippedCards, cards, mode, activePlayerIndex, playerCount, players]);
 
   const handleCardClick = (clickedIndex) => {
     if (isBoardLocked || flippedCards.length === 2 || cards[clickedIndex].isFlipped || cards[clickedIndex].isMatched) {
@@ -290,8 +303,6 @@ function App() {
     if (!isGameStarted) {
       setIsGameStarted(true);
     }
-            setPanelEffect({ index: activePlayerIndex, type: 'miss' });
-            setTimeout(() => setPanelEffect(null), 500);
 
     const newCards = cards.map((card, index) => {
       if (index === clickedIndex) {
@@ -311,12 +322,15 @@ function App() {
     setFlippedCards([]);
     setIsBoardLocked(false);
     setIsGameWon(false);
-    setIsGameStarted(false);
+    setIsGameStarted(mode === 'multi' ? true : false);
     setCompletionTime(0);
     setSeconds(0);
     if (mode === 'multi') {
       setIsPlayersLocked(true);
-      setActivePlayerIndex(Math.floor(Math.random() * playerCount));
+      const first = Math.floor(Math.random() * playerCount);
+      setActivePlayerIndex(first);
+      const firstName = players[first]?.name || `Player ${first + 1}`;
+      setBanner({ text: `${firstName} starts!` });
     } else {
       setIsPlayersLocked(false);
     }
@@ -401,8 +415,8 @@ function App() {
             {players.map((p, idx) => (
               <div
                 key={p.id}
-                className={`player-panel corner-${idx} ${idx < playerCount ? 'panel-active' : 'panel-inactive'} ${idx === activePlayerIndex && idx < playerCount && isGameStarted ? 'active' : ''} ${idx !== activePlayerIndex && idx < playerCount && isGameStarted ? 'dimmed' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'match' ? 'pulse-match' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'miss' ? 'tint-miss' : ''}`}
-                style={{ borderColor: p.color }}
+                className={`player-panel corner-${idx} ${idx < playerCount ? 'panel-active' : 'panel-inactive'} ${idx === activePlayerIndex && idx < playerCount ? 'active' : ''} ${idx !== activePlayerIndex && idx < playerCount ? 'dimmed' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'match' ? 'pulse-match' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'miss' ? 'tint-miss' : ''}`}
+                style={{ borderColor: p.color, '--panel-color': p.color }}
               >
                 <input
                   className="player-name-input"

@@ -201,7 +201,7 @@ h1 {
   content: '';
   position: absolute;
   inset: 0;
-  background: currentColor;
+  background: var(--panel-color, currentColor);
   opacity: 0.75;
   border-radius: 12px;
   pointer-events: none;
