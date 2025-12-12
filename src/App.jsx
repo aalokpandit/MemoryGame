@@ -413,11 +413,7 @@ function App() {
         {mode === 'multi' && (
           <div className="players-corners">
             {players.map((p, idx) => (
-              <div
-                key={p.id}
-                className={`player-panel corner-${idx} ${idx < playerCount ? 'panel-active' : 'panel-inactive'} ${idx === activePlayerIndex && idx < playerCount ? 'active' : ''} ${idx !== activePlayerIndex && idx < playerCount ? 'dimmed' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'match' ? 'pulse-match' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'miss' ? 'tint-miss' : ''}`}
-                style={{ borderColor: p.color, '--panel-color': p.color }}
-              >
+              <div key={p.id} className={`player-wrapper corner-${idx} ${idx < playerCount ? 'wrapper-active' : 'wrapper-inactive'}`}>
                 <input
                   className="player-name-input"
                   value={p.name}
@@ -434,14 +430,20 @@ function App() {
                     });
                   }}
                   disabled={isPlayersLocked || idx >= playerCount}
+                  style={{ borderColor: p.color }}
                 />
-                <div className="player-stats">
+                <div
+                  className={`player-panel ${idx < playerCount ? 'panel-active' : 'panel-inactive'} ${idx === activePlayerIndex && idx < playerCount && gameInitialized ? 'active' : ''} ${idx < playerCount && gameInitialized && idx !== activePlayerIndex ? 'dimmed' : ''} ${idx < playerCount && !gameInitialized ? 'dimmed' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'match' ? 'pulse-match' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'miss' ? 'tint-miss' : ''}`}
+                  style={{ borderColor: p.color, '--panel-color': p.color }}
+                >
+                  <div className="player-stats">
                   <span className="matches-count">Matches: {p.matches}</span>
                 </div>
                 <div className="matched-list">
                   {p.matchedItems.map((m) => (
                     <div key={m} className="matched-item">{m}</div>
                   ))}
+                </div>
                 </div>
               </div>
             ))}
