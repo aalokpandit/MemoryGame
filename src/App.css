@@ -182,17 +182,19 @@ h1 {
   pointer-events: auto;
   display: flex;
   flex-direction: column;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-width 180ms ease, opacity 150ms ease;
 }
 .player-panel.panel-inactive {
-  opacity: 0.35;
+  opacity: 0.3;
   pointer-events: none;
 }
 .player-panel.panel-active {
   opacity: 1;
 }
 .player-panel.active {
-  box-shadow: 0 0 20px 4px rgba(102,126,234,0.75);
+  box-shadow: 0 12px 28px 4px rgba(0,0,0,0.25), 0 0 20px 4px rgba(102,126,234,0.6);
   border-width: 4px;
+  transform: translateY(-6px);
 }
 .player-panel.pulse-match {
   animation: pulse 400ms ease-in-out;
