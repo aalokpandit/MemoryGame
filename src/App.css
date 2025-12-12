@@ -200,7 +200,7 @@ h1 {
 .player-panel.dimmed::after {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: 42px 0 0 0; /* leave name input unobscured */
   background: var(--panel-color, currentColor);
   opacity: 0.75;
   border-radius: 12px;
