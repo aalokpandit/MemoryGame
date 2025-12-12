@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import Card from './Card';
 
 function Board({ cards, onCardClick, gridSize }) {
@@ -23,7 +23,13 @@ function Board({ cards, onCardClick, gridSize }) {
     return Math.max(cardSize, 50); // Minimum 50px
   };
 
-  const cardSize = calculateCardSize();
+  const [cardSize, setCardSize] = useState(calculateCardSize());
+
+  useEffect(() => {
+    const onResize = () => setCardSize(calculateCardSize());
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [gridSize]);
 
   return (
     <div 

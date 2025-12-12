@@ -35,6 +35,16 @@ function App() {
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
   const [isPlayersLocked, setIsPlayersLocked] = useState(false);
 
+  // When difficulty changes, clamp playerCount and active index within range
+  useEffect(() => {
+    if (playerCount > maxPlayers) {
+      setPlayerCount(maxPlayers);
+    }
+    if (activePlayerIndex >= maxPlayers) {
+      setActivePlayerIndex(0);
+    }
+  }, [maxPlayers]);
+
   // Timer runs always during a game, but we only display in single mode
   useEffect(() => {
     if (!isGameStarted || isGameWon) return;
