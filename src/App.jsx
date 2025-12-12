@@ -193,6 +193,8 @@ function App() {
   const [players, setPlayers] = useState([
     { id: 1, name: 'Player 1', color: playerColors[0], matches: 0, matchedItems: [] },
     { id: 2, name: 'Player 2', color: playerColors[1], matches: 0, matchedItems: [] },
+    { id: 3, name: 'Player 3', color: playerColors[2], matches: 0, matchedItems: [] },
+    { id: 4, name: 'Player 4', color: playerColors[3], matches: 0, matchedItems: [] },
   ]);
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
   const [isPlayersLocked, setIsPlayersLocked] = useState(false);
@@ -330,7 +332,7 @@ function App() {
     setCompletionTime(0);
     setSeconds(0);
     setIsPlayersLocked(false);
-    setPlayers(prev => prev.slice(0, playerCount).map((p, i) => ({
+    setPlayers(prev => prev.map((p, i) => ({
       id: i + 1,
       name: p.name,
       color: p.color,
@@ -352,9 +354,12 @@ function App() {
     <div className="game-container">
       <h1>Memory Game</h1>
       <div className="top-controls">
-        <div className="mode-tabs" aria-label="Game mode">
-          <button className={mode === 'single' ? 'tab active' : 'tab'} onClick={() => { if (!isGameStarted) setMode('single'); }} disabled={isGameStarted}>Single Player</button>
-          <button className={mode === 'multi' ? 'tab active' : 'tab'} onClick={() => { if (!isGameStarted) setMode('multi'); }} disabled={isGameStarted}>Multi Player</button>
+        <div className="control-select">
+          <label>Mode:</label>
+          <select value={mode} onChange={(e) => setMode(e.target.value)} disabled={isGameStarted}>
+            <option value="single">Single Player</option>
+            <option value="multi">Multi Player</option>
+          </select>
         </div>
         <div className="control-select">
           <label>Difficulty:</label>
@@ -390,70 +395,68 @@ function App() {
           <button onClick={actionHandler} className="action-button">{actionLabel}</button>
         </div>
       </div>
-      {gameInitialized && (
-        <div className="board-container">
-          {mode === 'multi' && (
-            <div className="players-corners">
-              {players.slice(0, playerCount).map((p, idx) => (
-                <div
-                  key={p.id}
-                  className={`player-panel corner-${idx} ${idx === activePlayerIndex ? 'active' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'match' ? 'pulse-match' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'miss' ? 'tint-miss' : ''}`}
-                  style={{ borderColor: p.color }}
-                >
-                  <input
-                    className="player-name-input"
-                    value={p.name}
-                    maxLength={10}
-                    onChange={(e) => {
-                      if (isPlayersLocked) return;
-                      const newName = e.target.value;
-                      // Enforce unique names (case-insensitive)
-                      setPlayers(prev => {
-                        const next = [...prev];
-                        const exists = next.some((pl, i) => i !== idx && pl.name.toLowerCase() === newName.toLowerCase());
-                        next[idx] = { ...next[idx], name: exists ? next[idx].name : newName };
-                        return next;
-                      });
-                    }}
-                    disabled={isPlayersLocked}
-                  />
-                  <div className="player-stats">
-                    <span className="matches-count">Matches: {p.matches}</span>
-                  </div>
-                  <div className="matched-list">
-                    {p.matchedItems.map((m) => (
-                      <div key={m} className="matched-item">{m}</div>
-                    ))}
-                  </div>
+      <div className="board-container">
+        {mode === 'multi' && (
+          <div className="players-corners">
+            {players.map((p, idx) => (
+              <div
+                key={p.id}
+                className={`player-panel corner-${idx} ${idx < playerCount ? 'panel-active' : 'panel-inactive'} ${idx === activePlayerIndex && idx < playerCount && isGameStarted ? 'active' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'match' ? 'pulse-match' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'miss' ? 'tint-miss' : ''}`}
+                style={{ borderColor: p.color }}
+              >
+                <input
+                  className="player-name-input"
+                  value={p.name}
+                  maxLength={10}
+                  onChange={(e) => {
+                    if (isPlayersLocked || idx >= playerCount) return;
+                    const newName = e.target.value;
+                    // Enforce unique names (case-insensitive)
+                    setPlayers(prev => {
+                      const next = [...prev];
+                      const exists = next.some((pl, i) => i !== idx && pl.name.toLowerCase() === newName.toLowerCase());
+                      next[idx] = { ...next[idx], name: exists ? next[idx].name : newName };
+                      return next;
+                    });
+                  }}
+                  disabled={isPlayersLocked || idx >= playerCount}
+                />
+                <div className="player-stats">
+                  <span className="matches-count">Matches: {p.matches}</span>
                 </div>
-              ))}
-            </div>
-          )}
-          <Board cards={cards} onCardClick={handleCardClick} gridSize={gridSize} />
-          {banner && (
-            <div className="inline-banner" role="status" aria-live="polite">{banner.text}</div>
-          )}
-          {isGameWon && (
-            <div className="win-overlay">
-              <div className="win-screen">
-                {mode === 'single' ? (
-                  <h2>🎉 Congrats! You completed the game in {completionTime} 🎉</h2>
-                ) : (
-                  <>
-                    <h2>🎉 Game Over 🎉</h2>
-                    <p>Total Time: {completionTime}</p>
-                    {winners.length > 1 ? (
-                      <p>Winners: {winners.join(', ')}</p>
-                    ) : (
-                      <p>Winner: {winners[0]}</p>
-                    )}
-                  </>
-                )}
+                <div className="matched-list">
+                  {p.matchedItems.map((m) => (
+                    <div key={m} className="matched-item">{m}</div>
+                  ))}
+                </div>
               </div>
+            ))}
+          </div>
+        )}
+        {gameInitialized && <Board cards={cards} onCardClick={handleCardClick} gridSize={gridSize} />}
+        {banner && (
+          <div className="inline-banner" role="status" aria-live="polite">{banner.text}</div>
+        )}
+        {isGameWon && (
+          <div className="win-overlay">
+            <div className="win-screen">
+              {mode === 'single' ? (
+                <h2>🎉 Congrats! You completed the game in {completionTime} 🎉</h2>
+              ) : (
+                <>
+                  <h2>🎉 Game Over 🎉</h2>
+                  <p>Total Time: {completionTime}</p>
+                  {winners.length > 1 ? (
+                    <p>Winners: {winners.join(', ')}</p>
+                  ) : (
+                    <p>Winner: {winners[0]}</p>
+                  )}
+                </>
+              )}
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -46,27 +46,6 @@ h1 {
   flex-wrap: wrap;
 }
 
-.mode-tabs {
-  display: flex;
-  gap: 8px;
-}
-.mode-tabs .tab {
-  padding: 8px 12px;
-  border: 2px solid #667eea;
-  background: #f8f9ff;
-  color: #333;
-  border-radius: 6px;
-  height: 40px;
-}
-.mode-tabs .tab.active {
-  border-color: #764ba2;
-  box-shadow: 0 0 0 2px rgba(118,75,162,0.2) inset;
-}
-.mode-tabs .tab:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .control-select {
   display: flex;
   flex-direction: column;
@@ -193,17 +172,27 @@ h1 {
 }
 .player-panel {
   position: absolute;
-  width: 180px;
-  max-height: 40%;
-  border: 2px solid currentColor;
+  width: 200px;
+  height: 45%;
+  border: 3px solid currentColor;
   border-radius: 12px;
-  padding: 8px;
+  padding: 10px;
   background: rgba(255,255,255,0.9);
   color: #333;
   pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+}
+.player-panel.panel-inactive {
+  opacity: 0.35;
+  pointer-events: none;
+}
+.player-panel.panel-active {
+  opacity: 1;
 }
 .player-panel.active {
-  box-shadow: 0 0 10px 2px rgba(102,126,234,0.4);
+  box-shadow: 0 0 20px 4px rgba(102,126,234,0.75);
+  border-width: 4px;
 }
 .player-panel.pulse-match {
   animation: pulse 400ms ease-in-out;
@@ -256,8 +245,8 @@ h1 {
 }
 .matched-list {
   margin-top: 6px;
-  max-height: 120px;
-  overflow: auto;
+  flex: 1;
+  overflow-y: auto;
   font-size: 12px;
 }
 .matched-item {
