@@ -217,19 +217,22 @@ function App() {
   }, [isGameStarted]);
 
   useEffect(() => {
-    if (gameInitialized && cards.length > 0 && cards.every(card => card.isMatched)) {
-      const minutes = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      const time = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-      setCompletionTime(time);
-      setIsGameWon(true);
-      if (mode === 'multi') {
-        const maxMatches = Math.max(...players.slice(0, playerCount).map(p => p.matches));
-        const w = players.slice(0, playerCount).filter(p => p.matches === maxMatches).map(p => p.name);
-        setWinners(w);
-      }
+    if (!gameInitialized || cards.length === 0) return;
+    if (!cards.every(card => card.isMatched)) return;
+
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    const time = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    setCompletionTime(time);
+    setIsGameWon(true);
+
+    if (mode === 'multi') {
+      const activePlayers = players.slice(0, playerCount);
+      const maxMatches = Math.max(...activePlayers.map(p => p.matches));
+      const w = activePlayers.filter(p => p.matches === maxMatches).map(p => p.name);
+      setWinners(w);
     }
-  }, [cards, gameInitialized, seconds]);
+  }, [cards, gameInitialized, seconds, mode, players, playerCount]);
 
   useEffect(() => {
     if (flippedCards.length !== 2) return;
@@ -296,7 +299,9 @@ function App() {
   }, [flippedCards, cards, mode, activePlayerIndex, playerCount, players]);
 
   const handleCardClick = (clickedIndex) => {
-    if (isBoardLocked || flippedCards.length === 2 || cards[clickedIndex].isFlipped || cards[clickedIndex].isMatched) {
+    const card = cards[clickedIndex];
+    if (!card) return; // guard stale indices
+    if (isBoardLocked || flippedCards.length === 2 || card.isFlipped || card.isMatched) {
       return;
     }
 
@@ -363,6 +368,24 @@ function App() {
   const minutes = Math.floor(seconds / 60);
   const secs = seconds % 60;
   const formattedTime = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+  const getPanelClass = (idx) => {
+    const isActivePlayer = idx === activePlayerIndex && idx < playerCount && gameInitialized;
+    const isDimmedTurn = idx < playerCount && gameInitialized && idx !== activePlayerIndex;
+    const isPreStartDim = idx < playerCount && !gameInitialized;
+    const isMatchEffect = panelEffect && panelEffect.index === idx && panelEffect.type === 'match';
+    const isMissEffect = panelEffect && panelEffect.index === idx && panelEffect.type === 'miss';
+
+    return [
+      'player-panel',
+      idx < playerCount ? 'panel-active' : 'panel-inactive',
+      isActivePlayer ? 'active' : '',
+      isDimmedTurn ? 'dimmed' : '',
+      isPreStartDim ? 'dimmed' : '',
+      isMatchEffect ? 'pulse-match' : '',
+      isMissEffect ? 'tint-miss' : '',
+    ].filter(Boolean).join(' ');
+  };
 
   return (
     <div className="game-container">
@@ -433,7 +456,7 @@ function App() {
                   style={{ borderColor: p.color }}
                 />
                 <div
-                  className={`player-panel ${idx < playerCount ? 'panel-active' : 'panel-inactive'} ${idx === activePlayerIndex && idx < playerCount && gameInitialized ? 'active' : ''} ${idx < playerCount && gameInitialized && idx !== activePlayerIndex ? 'dimmed' : ''} ${idx < playerCount && !gameInitialized ? 'dimmed' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'match' ? 'pulse-match' : ''} ${panelEffect && panelEffect.index === idx && panelEffect.type === 'miss' ? 'tint-miss' : ''}`}
+                  className={getPanelClass(idx)}
                   style={{ borderColor: p.color, '--panel-color': p.color }}
                 >
                   <div className="player-stats">
