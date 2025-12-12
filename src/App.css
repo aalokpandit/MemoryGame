@@ -186,8 +186,8 @@ h1 {
 }
 .corner-0 { top: 8px; left: 8px; }
 .corner-1 { top: 8px; right: 8px; }
-.corner-2 { bottom: calc(55vh - 20px); left: 8px; }
-.corner-3 { bottom: calc(55vh - 20px); right: 8px; }
+.corner-2 { bottom: 8px; left: 8px; transform: translateY(36px); }
+.corner-3 { bottom: 8px; right: 8px; transform: translateY(36px); }
 
 .player-panel {
   position: relative;
@@ -266,15 +266,11 @@ h1 {
 .matched-list {
   margin-top: 6px;
   flex: 1;
+  overflow-y: auto;
   font-size: 12px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px;
-  align-content: start;
 }
 .matched-item {
   padding: 2px 4px;
-  text-align: center;
 }
 
 @media (max-width: 900px) {
