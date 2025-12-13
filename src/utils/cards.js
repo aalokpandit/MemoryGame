@@ -16,8 +16,8 @@ export function generateCards(theme, pairsCount) {
   const cards = [];
   let id = 1;
   for (const item of selectedItems) {
-    cards.push({ id: id++, value: item.name, color: item.color, isFlipped: false, isMatched: false });
-    cards.push({ id: id++, value: item.name, color: item.color, isFlipped: false, isMatched: false });
+    cards.push({ id: id++, value: item.name, emoji: item.emoji, color: item.color, isFlipped: false, isMatched: false });
+    cards.push({ id: id++, value: item.name, emoji: item.emoji, color: item.color, isFlipped: false, isMatched: false });
   }
   return shuffle(cards);
 }
