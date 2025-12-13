@@ -332,6 +332,12 @@ h1 {
   transform: rotateY(180deg);
 }
 
+.emoji-sprite {
+  font-size: 10vw;
+  line-height: 1;
+  filter: drop-shadow(3px 3px 0px rgba(0, 0, 0, 0.4)) drop-shadow(6px 6px 4px rgba(0, 0, 0, 0.3)) drop-shadow(8px 8px 6px rgba(0, 0, 0, 0.2));
+}
+
 .card-back {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
 }
