@@ -284,15 +284,25 @@ function App() {
     setActivePlayerIndex(0);
   };
 
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
   const handleBackToMenu = () => {
-    if (gameInitialized) {
-      if (confirm('Game in progress. Abandon game?')) {
-        resetGame();
-        setScreen('menu');
-      }
+    if (gameInitialized && !isGameWon) {
+      setShowConfirmDialog(true);
     } else {
+      resetGame();
       setScreen('menu');
     }
+  };
+
+  const confirmBackToMenu = () => {
+    setShowConfirmDialog(false);
+    resetGame();
+    setScreen('menu');
+  };
+
+  const cancelBackToMenu = () => {
+    setShowConfirmDialog(false);
   };
 
   const handleRestartSame = () => {
@@ -379,6 +389,18 @@ function App() {
         {banner && (
           <div className="inline-banner" role="status" aria-live="polite">{banner.text}</div>
         )}
+        {showConfirmDialog && (
+          <div className="win-overlay">
+            <div className="win-screen confirm-dialog">
+              <h2>Abandon Game?</h2>
+              <p>Game in progress. Are you sure you want to go back to the menu?</p>
+              <div className="dialog-buttons">
+                <button onClick={confirmBackToMenu} className="confirm-button">Yes, Go to Menu</button>
+                <button onClick={cancelBackToMenu} className="cancel-button">Cancel</button>
+              </div>
+            </div>
+          </div>
+        )}
         {isGameWon && (
           <div className="win-overlay">
             <div className="win-screen">
@@ -397,10 +419,13 @@ function App() {
                   )}
                 </>
               )}
-              <button onClick={() => {
-                resetGame();
-                setScreen('menu');
-              }} className="play-again-button">Play Again</button>
+              <div className="win-buttons">
+                <button onClick={handleRestartSame} className="play-again-button">Play Again</button>
+                <button onClick={() => {
+                  resetGame();
+                  setScreen('menu');
+                }} className="menu-button">Back to Menu</button>
+              </div>
             </div>
           </div>
         )}

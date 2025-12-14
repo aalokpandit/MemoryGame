@@ -1,51 +1,76 @@
 # Memory Game
 
-A feature-rich memory card matching game built with React and Vite.
+A fully responsive, feature-rich memory card matching game built with React and Vite. Optimized for mobile and desktop with adaptive layouts and dynamic sizing.
 
 ## Features
 
 ### Game Modes
-- **Single Player & Multiplayer**: Solo mode with timer, or multiplayer with turn-taking and player stats
-- **Multiple Themes**: Choose from 4 different themes with 32 unique items each
-  - Animals
-  - Fruits & Vegetables
-  - Vehicles & Transport
-  - Everyday Objects
+- **Single Player**: Solo play with move counter and timer
+- **Multiplayer**: 2–4 players with turn-taking, color-coded panels, and match tracking
+
+### Themes
+Choose from 4 unique themes with 32 emojis each:
+- **Animals** 🐶
+- **Fruits & Vegetables** 🍎
+- **Vehicles & Transportation** 🚗
+- **Everyday Objects** 📚
 
 ### Difficulty Levels
 - **Easy**: 4×4 grid (8 pairs)
 - **Medium**: 6×6 grid (18 pairs)
 - **Hard**: 8×8 grid (32 pairs)
 
+Visual indicators: difficulty cards show scaled emoji icons (small for Easy, large for Hard) to represent relative game size.
+
 ### Gameplay Features
-- **Timer**: Tracks your completion time from first card flip to game completion
-- **Dynamic Grid**: Automatically scales to fit your screen while maintaining square cards
-- **Card Flip Animation**: Smooth 3D flip transitions
-- **Emoji Card Faces**: 128 unique emojis across 4 themes; each card uses the theme color for the border and a complementary tinted background for contrast, plus layered drop-shadow for depth
-- **Win Detection**: Automatically detects when all pairs are matched
-- **Celebration**: Win screen with completion time and celebration emojis
+- **Adaptive Grid**: Cards scale dynamically based on available screen space with intelligent gap distribution
+- **Mobile Optimized**: 8×8 grid fits on mobile screens (portrait and landscape) without scrolling
+- **Move Counter**: Tracks pair attempts (one flip = one move)
+- **Timer**: Starts on first card flip and runs until game completion
+- **Card Animations**: Smooth 3D flip transitions with color-coded borders and layered drop-shadows
+- **Win Screen**: Shows completion stats with "Play Again" (restart same config) and "Back to Menu" buttons
+- **Custom Confirmation Dialog**: Styled confirmation when abandoning an active game (no confirmation after game completion)
 
-### Multiplayer Mode
-- **Players**: 2–4 players, capped by difficulty (max 2 on 4×4, 3 on 6×6, 4 on 8×8)
-- **Names**: Each player has a unique name (max 10 chars) entered before starting; names are locked once play begins
-- **Turn Logic**: A random player starts; matching keeps the turn, missing passes to the next player
-- **Panels**: Four corner panels show active highlight, dim inactive players, and track matches plus matched item list
-- **Winners**: Highest match count wins; ties are handled and reported; timer is shown on the end screen (hidden during multiplayer play)
+### Multiplayer Features
+- **2–4 Players**: Player count capped by difficulty (max 2 on Easy, 3 on Medium, 4 on Hard)
+- **Custom Names**: Each player enters a name (up to 12 characters) before starting
+- **Turn System**: Random starting player; matching keeps turn, missing passes to next
+- **Player Panels**: Color-coded panels show current player, match counts, and matched items (expandable)
+- **Winner Detection**: Highest match count wins; handles ties and displays all winners
 
-## Recent Refactors & Optimizations
+## Mobile Optimization
 
-- **Lean App component**: Moved large constants and utilities out of `src/App.jsx`.
-- **Stable win detection**: Effect now depends on `mode`, `players`, and `playerCount` to avoid stale winners.
-- **Safer clicks**: Card click handler guards invalid indices and states.
-- **Cleaner classes**: Centralized player panel classes via a helper.
-- **Responsive board**: Card size recalculates on window resize for consistent layout.
-- **Player clamping**: `playerCount` and active index auto-clamp when difficulty reduces max players.
+The game automatically measures available screen space and:
+- Shrinks cards as needed (down to 2px minimum) to fit dense grids
+- Adds breathing room between cards when space permits (dynamic gap calculation)
+- Centers the grid vertically and horizontally
+- Compresses header, buttons, and player info on short screens
+- Eliminates horizontal/vertical scrolling during gameplay
 
-### Technical Features
-- Responsive design that fits any screen size
-- Fisher-Yates shuffle algorithm for random card distribution
-- Optimized React components with memo() for better performance
-- Clean, modern UI with gradient backgrounds
+Menu screen scales all components to fit viewport without scrolling.
+
+## Recent Updates
+
+### Mobile Layout (v2.0)
+- Accurate board measurement via `getBoundingClientRect` with viewport fallback
+- Dynamic gap calculation distributes leftover space evenly between cards
+- Grid centers on screen for better visual balance
+- Flex containers with proper `min-height`/`min-width` guards for correct shrinking
+- Menu screen scales padding/fonts/gaps to eliminate scrolling
+
+### UX Improvements
+- Play Again button restarts current game instead of returning to menu
+- Separate "Back to Menu" button on win screen
+- Custom styled confirmation dialog replaces browser's `confirm()`
+- No confirmation prompt when returning to menu after game completion
+- Difficulty cards show visually scaled icons matching grid size
+
+### Code Quality
+- Moved large constants and utilities out of main component
+- Stable win detection with proper dependency tracking
+- Safer card click handling with guard conditions
+- Centralized player panel CSS classes
+- Optimized re-renders with React.memo() and proper effect dependencies
 
 ## Getting Started
 
@@ -59,6 +84,12 @@ npm install
 
 ```bash
 npm run dev
+```
+
+For mobile testing with network access:
+
+```bash
+npm run dev -- --host
 ```
 
 ### Build
@@ -75,28 +106,63 @@ npm run preview
 
 ## How to Play
 
-1. Select your preferred difficulty level and theme
-2. Click "Start Game" to begin
-3. Click on cards to flip them and reveal the items
-4. Match pairs of identical items
-5. The timer starts when you flip your first card
-6. Complete all pairs to win and see your time!
-7. Click "Play Another Game" to try again with different settings
+### Single Player
+1. Choose difficulty level and theme from the menu
+2. Click "Start Game"
+3. Flip cards by clicking to find matching pairs
+4. Timer starts on first flip
+5. Complete all pairs to see your time and move count
+6. Click "Play Again" to restart or "Back to Menu" to change settings
 
-## Technologies Used
+### Multiplayer
+1. Select "Multiplayer" mode
+2. Choose number of players (2–4, based on difficulty)
+3. Enter player names
+4. Select difficulty and theme
+5. Click "Start Game" - a random player starts
+6. Match pairs to keep your turn; miss to pass
+7. Player with most matches wins!
 
-- React 19.2.0
-- Vite 7.2.4
-- CSS3 (Grid, Flexbox, Animations)
-- Google Fonts (Roboto Mono)
+## Technologies
+
+- **React** 19.2.0 - UI library with hooks and memo optimization
+- **Vite** 7.2.4 - Fast build tool and dev server
+- **CSS3** - Grid, Flexbox, container queries, animations, and responsive design
+- **Google Fonts** - Roboto Mono for timer/counter display
 
 ## Project Structure
 
-- `src/App.jsx`: Game logic, state management, and layout
-- `src/components/Board.jsx` / `Card.jsx`: Grid and card rendering (memoized)
-- `src/data/themes.js`: Theme definitions and colors
-- `src/constants/difficulties.js`: Grid sizes and pair counts
-- `src/utils/cards.js`: Card generation and shuffle utilities
+```
+src/
+├── App.jsx                    # Main game logic and state
+├── App.css                    # Game screen styles
+├── main.jsx                   # React entry point
+├── components/
+│   ├── MenuScreen.jsx         # Menu UI and configuration
+│   ├── Board.jsx              # Dynamic grid layout with measured sizing
+│   ├── Card.jsx               # Card flip component
+│   └── PlayerBar.jsx          # Multiplayer panel display
+├── styles/
+│   ├── MenuScreen.css         # Menu responsive styles
+│   └── PlayerBar.css          # Player panel styles
+├── data/
+│   └── themes.js              # Theme emoji sets and colors
+├── constants/
+│   └── difficulties.js        # Grid sizes and pair counts
+└── utils/
+    └── cards.js               # Card generation and Fisher-Yates shuffle
+```
+
+## Browser Support
+
+- Modern browsers with ES6+ support
+- Tested on Chrome, Firefox, Safari, Edge
+- Mobile browsers: iOS Safari, Chrome Mobile, Samsung Internet
+- Uses `100dvh` for accurate mobile viewport height
+
+## License
+
+MIT
 
 ## Development
 

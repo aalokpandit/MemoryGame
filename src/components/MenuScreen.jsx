@@ -136,7 +136,7 @@ function MenuScreen({ onStartGame }) {
               return (
                 <button
                   key={key}
-                  className={`selection-card difficulty-card ${difficulty === key ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
+                  className={`selection-card difficulty-card difficulty-${key} ${difficulty === key ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
                   onClick={() => { if (!disabled) setDifficulty(key); }}
                   disabled={disabled}
                 >

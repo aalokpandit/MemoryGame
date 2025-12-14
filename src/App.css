@@ -434,6 +434,104 @@ h1 {
   transform: translateY(0);
 }
 
+.win-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.win-buttons button {
+  flex: 1;
+}
+
+.menu-button {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.9);
+  color: #667eea;
+  border: 2px solid #667eea;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.menu-button:hover {
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.menu-button:active {
+  transform: translateY(0);
+}
+
+.confirm-dialog {
+  max-width: 400px;
+}
+
+.confirm-dialog h2 {
+  font-size: 1.8rem;
+  color: #667eea;
+  margin-bottom: 12px;
+}
+
+.confirm-dialog p {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.dialog-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.dialog-buttons button {
+  flex: 1;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.confirm-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.confirm-button:active {
+  transform: translateY(0);
+}
+
+.cancel-button {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: 2px solid #ddd;
+}
+
+.cancel-button:hover {
+  background: white;
+  border-color: #999;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cancel-button:active {
+  transform: translateY(0);
+}
+
 .confetti-canvas {
   position: fixed;
   top: 0;
