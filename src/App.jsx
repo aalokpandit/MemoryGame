@@ -197,6 +197,7 @@ function App() {
     setCompletionTime(0);
     setSeconds(0);
     setIsPlayersLocked(false);
+    setBanner(null);
     setPlayers(prev => prev.map((p, i) => ({
       id: i + 1,
       name: p.name,

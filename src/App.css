@@ -326,6 +326,7 @@ h1 {
   font-weight: bold;
   font-size: 1rem;
   text-shadow: none;
+  container-type: size;
 }
 
 .card-front {
@@ -333,7 +334,7 @@ h1 {
 }
 
 .emoji-sprite {
-  font-size: 10vw;
+  font-size: 60cqw;
   line-height: 1;
   filter: drop-shadow(3px 3px 0px rgba(0, 0, 0, 0.4)) drop-shadow(6px 6px 4px rgba(0, 0, 0, 0.3)) drop-shadow(8px 8px 6px rgba(0, 0, 0, 0.2));
 }

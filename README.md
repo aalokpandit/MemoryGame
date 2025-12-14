@@ -21,7 +21,7 @@ A feature-rich memory card matching game built with React and Vite.
 - **Timer**: Tracks your completion time from first card flip to game completion
 - **Dynamic Grid**: Automatically scales to fit your screen while maintaining square cards
 - **Card Flip Animation**: Smooth 3D flip transitions
-- **Colored Cards**: Each item has its own unique color with contrasting text for readability
+- **Emoji Card Faces**: 128 unique emojis across 4 themes; each card uses the theme color for the border and a complementary tinted background for contrast, plus layered drop-shadow for depth
 - **Win Detection**: Automatically detects when all pairs are matched
 - **Celebration**: Win screen with completion time and celebration emojis
 
@@ -108,6 +108,12 @@ npm run dev -- --host --port 5173
 ```
 
 If port 5173 is busy, Vite will pick another port and report it in the terminal.
+
+## Emoji Compatibility & Testing
+
+- All 128 emojis are verified in the browser for the current theme sets. If you switch browsers or platforms and see missing glyphs, open [public/emoji-test.html](public/emoji-test.html) to spot any unsupported emojis.
+- Theme coverage (32 each): Animals; Fruits & Veggies; Vehicles; Objects. See [src/data/themes.js](src/data/themes.js) for the current mappings.
+- If any emoji shows as a rectangle or question mark, replace it with an older, widely supported emoji and re-run the test page.
 
 ## License
 
