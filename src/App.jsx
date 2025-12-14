@@ -1,14 +1,21 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useLayoutEffect, useRef } from 'react';
+import MenuScreen from './components/MenuScreen';
 import Board from './components/Board';
+import PlayerBar from './components/PlayerBar';
 import { THEMES } from './data/themes';
 import { DIFFICULTIES } from './constants/difficulties';
 import { generateCards } from './utils/cards';
 import './App.css';
 
 function App() {
+  // Screen management
+  const [screen, setScreen] = useState('menu'); // 'menu' | 'game'
+
+  // Game configuration (set by menu)
   const [mode, setMode] = useState('single'); // 'single' | 'multi'
   const [difficulty, setDifficulty] = useState('easy');
   const [theme, setTheme] = useState('animals');
+  // Game state
   const [cards, setCards] = useState([]);
   const [flippedCards, setFlippedCards] = useState([]);
   const [isBoardLocked, setIsBoardLocked] = useState(false);
@@ -17,9 +24,12 @@ function App() {
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [completionTime, setCompletionTime] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  const [moves, setMoves] = useState(0); // Moves counter (one pair attempt = one move)
   const [banner, setBanner] = useState(null); // { text: string } | null
   const [panelEffect, setPanelEffect] = useState(null); // { index:number, type:'match'|'miss' } | null
   const [winners, setWinners] = useState([]); // multiplayer winners at end
+  const boardAreaRef = useRef(null);
+  const [boardArea, setBoardArea] = useState({ width: 0, height: 0 });
 
   // Multiplayer state scaffolding
   const gridSide = useMemo(() => DIFFICULTIES[difficulty].size, [difficulty]);
@@ -44,6 +54,44 @@ function App() {
       setActivePlayerIndex(0);
     }
   }, [maxPlayers]);
+
+  // Track board area so the grid can size to the actual container instead of the viewport
+  useLayoutEffect(() => {
+    if (screen !== 'game') return;
+    if (!boardAreaRef.current) return;
+
+    const measure = () => {
+      const rect = boardAreaRef.current?.getBoundingClientRect();
+      const width = Math.max(0, Math.floor(rect?.width ?? 0));
+      const height = Math.max(0, Math.floor(rect?.height ?? 0));
+
+      // Fallback to viewport if something reports zero (some mobile browsers do this briefly)
+      const fallbackWidth = Math.floor(window.innerWidth || 0);
+      const fallbackHeight = Math.floor(window.innerHeight || 0);
+
+      const next = {
+        width: width || fallbackWidth,
+        height: height || fallbackHeight,
+      };
+
+      setBoardArea((prev) => {
+        const changed = prev.width !== next.width || prev.height !== next.height;
+        return changed ? next : prev;
+      });
+    };
+
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    observer?.observe(boardAreaRef.current);
+
+    window.addEventListener('resize', measure);
+    const rafId = requestAnimationFrame(measure);
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', measure);
+      cancelAnimationFrame(rafId);
+    };
+  }, [screen]);
 
   // Timer runs always during a game, but we only display in single mode
   useEffect(() => {
@@ -84,6 +132,9 @@ function App() {
     if (flippedCards.length !== 2) return;
 
     setIsBoardLocked(true);
+    // Increment moves counter (one pair attempt = one move)
+    setMoves(prev => prev + 1);
+
     const [first, second] = flippedCards;
     const firstCard = cards[first];
     const secondCard = cards[second];
@@ -166,17 +217,41 @@ function App() {
     setFlippedCards(prev => [...prev, clickedIndex]);
   };
 
-  const startGame = () => {
-    const pairsCount = DIFFICULTIES[difficulty].pairs;
-    setCards(generateCards(theme, pairsCount));
+  // Handle menu start game
+  const handleStartGame = (config) => {
+    setMode(config.mode);
+    setDifficulty(config.difficulty);
+    setTheme(config.theme);
+
+    // Set player count and names if multiplayer
+    if (config.mode === 'multi') {
+      setPlayerCount(config.playerCount);
+      setPlayers(prev => prev.map((p, i) => ({
+        ...p,
+        name: config.playerNames[i] || p.name,
+      })));
+    }
+
+    setScreen('game');
+    // Start immediately using provided config to avoid stale state
+    startGame(config);
+  };
+
+  const startGame = (cfg) => {
+    const d = cfg?.difficulty ?? difficulty;
+    const t = cfg?.theme ?? theme;
+    const m = cfg?.mode ?? mode;
+    const pairsCount = DIFFICULTIES[d].pairs;
+    setCards(generateCards(t, pairsCount));
     setGameInitialized(true);
     setFlippedCards([]);
     setIsBoardLocked(false);
     setIsGameWon(false);
-    setIsGameStarted(mode === 'multi' ? true : false);
+    setIsGameStarted(m === 'multi' ? true : false);
     setCompletionTime(0);
     setSeconds(0);
-    if (mode === 'multi') {
+    setMoves(0);
+    if (m === 'multi') {
       setIsPlayersLocked(true);
       const first = Math.floor(Math.random() * playerCount);
       setActivePlayerIndex(first);
@@ -196,6 +271,7 @@ function App() {
     setIsGameStarted(false);
     setCompletionTime(0);
     setSeconds(0);
+    setMoves(0);
     setIsPlayersLocked(false);
     setBanner(null);
     setPlayers(prev => prev.map((p, i) => ({
@@ -208,9 +284,24 @@ function App() {
     setActivePlayerIndex(0);
   };
 
+  const handleBackToMenu = () => {
+    if (gameInitialized) {
+      if (confirm('Game in progress. Abandon game?')) {
+        resetGame();
+        setScreen('menu');
+      }
+    } else {
+      setScreen('menu');
+    }
+  };
+
+  const handleRestartSame = () => {
+    // Restart with current selections
+    resetGame();
+    startGame({ mode, difficulty, theme });
+  };
+
   const gridSize = DIFFICULTIES[difficulty].size;
-  const actionLabel = !gameInitialized ? 'Start Game' : isGameWon ? 'Play Another Game' : 'Reset';
-  const actionHandler = !gameInitialized ? startGame : (isGameWon ? resetGame : resetGame);
 
   const minutes = Math.floor(seconds / 60);
   const secs = seconds % 60;
@@ -234,92 +325,57 @@ function App() {
     ].filter(Boolean).join(' ');
   };
 
+  if (screen === 'menu') {
+    return (
+      <MenuScreen 
+        onStartGame={handleStartGame}
+      />
+    );
+  }
+
   return (
     <div className="game-container">
-      <h1>Memory Game</h1>
-      <div className="top-controls">
-        <div className="control-select">
-          <label>Mode:</label>
-          <select value={mode} onChange={(e) => setMode(e.target.value)} disabled={isGameStarted}>
-            <option value="single">Single Player</option>
-            <option value="multi">Multi Player</option>
-          </select>
-        </div>
-        <div className="control-select">
-          <label>Difficulty:</label>
-          <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)} disabled={gameInitialized}>
-            <option value="easy">Easy (4x4)</option>
-            <option value="medium">Medium (6x6)</option>
-            <option value="hard">Hard (8x8)</option>
-          </select>
-        </div>
-        <div className="control-select">
-          <label>Theme:</label>
-          <select value={theme} onChange={(e) => setTheme(e.target.value)} disabled={gameInitialized}>
-            <option value="animals">Animals</option>
-            <option value="fruits">Fruits & Vegetables</option>
-            <option value="vehicles">Vehicles & Transport</option>
-            <option value="objects">Everyday Objects</option>
-          </select>
-        </div>
-        {mode === 'single' ? (
-          <div className="control-select">
-            <label>Time:</label>
-            <div className="timer-display">{formattedTime}</div>
-          </div>
-        ) : (
-          <div className="control-select">
-            <label>Players:</label>
-            <input type="number" min={2} max={maxPlayers} value={playerCount} onChange={(e) => setPlayerCount(Math.min(Math.max(Number(e.target.value), 2), maxPlayers))} disabled={gameInitialized} />
-            <div className="helper-text">Max {maxPlayers} for {gridSide}×{gridSide}</div>
-          </div>
-        )}
-        <div className="control-select">
-          <label>&nbsp;</label>
-          <button onClick={actionHandler} className="action-button">{actionLabel}</button>
+      <div className="game-header">
+        <h1>Memory Game</h1>
+        <div className="header-actions">
+          <button className="back-button" onClick={handleBackToMenu}>← Back to Menu</button>
+          <button className="back-button" onClick={handleRestartSame}>↻ Restart</button>
         </div>
       </div>
-      <div className="board-container">
-        {mode === 'multi' && (
-          <div className="players-corners">
-            {players.map((p, idx) => (
-              <div key={p.id} className={`player-wrapper corner-${idx} ${idx < playerCount ? 'wrapper-active' : 'wrapper-inactive'}`}>
-                <input
-                  className="player-name-input"
-                  value={p.name}
-                  maxLength={10}
-                  onChange={(e) => {
-                    if (isPlayersLocked || idx >= playerCount) return;
-                    const newName = e.target.value;
-                    // Enforce unique names (case-insensitive)
-                    setPlayers(prev => {
-                      const next = [...prev];
-                      const exists = next.some((pl, i) => i !== idx && pl.name.toLowerCase() === newName.toLowerCase());
-                      next[idx] = { ...next[idx], name: exists ? next[idx].name : newName };
-                      return next;
-                    });
-                  }}
-                  disabled={isPlayersLocked || idx >= playerCount}
-                  style={{ borderColor: p.color }}
-                />
-                <div
-                  className={getPanelClass(idx)}
-                  style={{ borderColor: p.color, '--panel-color': p.color }}
-                >
-                  <div className="player-stats">
-                  <span className="matches-count">Matches: {p.matches}</span>
-                </div>
-                <div className="matched-list">
-                  {p.matchedItems.map((m) => (
-                    <div key={m} className="matched-item">{m}</div>
-                  ))}
-                </div>
-                </div>
-              </div>
-            ))}
+      
+      {mode === 'multi' && playerCount > 0 && (
+        <PlayerBar 
+          players={players}
+          playerCount={playerCount}
+          activePlayerIndex={activePlayerIndex}
+        />
+      )}
+      
+      {mode === 'single' && (
+        <div className="single-player-info">
+          <div className="info-item">
+            <span className="label">Moves:</span>
+            <span className="value">{moves}</span>
           </div>
-        )}
-        {gameInitialized && <Board cards={cards} onCardClick={handleCardClick} gridSize={gridSize} />}
+          <div className="info-item">
+            <span className="label">Time:</span>
+            <span className="value">{formattedTime}</span>
+          </div>
+        </div>
+      )}
+
+      <div className="board-container">
+        <div className="board-area" ref={boardAreaRef}>
+          {gameInitialized && (
+            <Board
+              cards={cards}
+              onCardClick={handleCardClick}
+              gridSize={gridSize}
+              boardArea={boardArea}
+            />
+          )}
+        </div>
+
         {banner && (
           <div className="inline-banner" role="status" aria-live="polite">{banner.text}</div>
         )}
@@ -327,7 +383,9 @@ function App() {
           <div className="win-overlay">
             <div className="win-screen">
               {mode === 'single' ? (
-                <h2>🎉 Congrats! You completed the game in {completionTime} 🎉</h2>
+                <>
+                  <h2>🎉 Congrats! You completed the game in {completionTime} and {moves} moves🎉</h2>
+                </>
               ) : (
                 <>
                   <h2>🎉 Game Over 🎉</h2>
@@ -339,6 +397,10 @@ function App() {
                   )}
                 </>
               )}
+              <button onClick={() => {
+                resetGame();
+                setScreen('menu');
+              }} className="play-again-button">Play Again</button>
             </div>
           </div>
         )}

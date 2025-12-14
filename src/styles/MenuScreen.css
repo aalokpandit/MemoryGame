@@ -1,0 +1,261 @@
+/* MenuScreen.css */
+
+.menu-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100dvh;
+  width: 100vw;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  overflow-y: auto;
+}
+
+.menu-header {
+  text-align: center;
+  color: white;
+  margin-bottom: 40px;
+  padding-top: 20px;
+}
+
+.menu-header h1 {
+  font-size: 2.5rem;
+  margin: 0 0 10px 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.menu-header p {
+  font-size: 1.1rem;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.menu-content {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #333;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.selection-grid.three-cols {
+  grid-template-columns: repeat(3, minmax(140px, 1fr));
+}
+
+.selection-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 12px;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  min-height: 100px;
+}
+
+.selection-card:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.selection-card.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+}
+
+.selection-card.active .card-icon,
+.selection-card.active .card-label,
+.selection-card.active .card-subtext {
+  color: white;
+}
+
+.card-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.card-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+  color: #333;
+}
+
+.card-subtext {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.selection-card.active .card-subtext {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.selection-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.player-names-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.player-name-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.player-name-wrapper:focus-within {
+  border-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.player-color-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.player-name-input {
+  flex: 1;
+  border: none;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  color: #333;
+  background: transparent;
+  padding: 4px 0;
+}
+
+.player-name-input::placeholder {
+  color: #999;
+}
+
+.player-count-card {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.start-button {
+  margin-top: 20px;
+  padding: 16px 40px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  width: 100%;
+}
+
+.start-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.start-button:active {
+  transform: translateY(0);
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .menu-screen {
+    padding: 12px;
+  }
+
+  .menu-header {
+    margin-bottom: 24px;
+    padding-top: 12px;
+  }
+
+  .menu-header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+  }
+
+  .menu-header p {
+    font-size: 1rem;
+  }
+
+  .menu-content {
+    max-width: 100%;
+    gap: 20px;
+  }
+
+  .selection-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .selection-grid.three-cols {
+    grid-template-columns: repeat(3, minmax(90px, 1fr));
+  }
+
+  .selection-card {
+    min-height: 90px;
+    padding: 12px 8px;
+    font-size: 0.9rem;
+  }
+
+  .card-icon {
+    font-size: 1.8rem;
+  }
+
+  .card-label {
+    font-size: 0.85rem;
+  }
+
+  .player-names-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .player-name-wrapper {
+    padding: 10px;
+  }
+
+  .player-name-input {
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,120 @@
+/* PlayerBar.css */
+
+.player-bar {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.player-card {
+  flex: 1;
+  min-width: 78px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.player-card.active {
+  border-width: 3px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.player-card-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 5px 2px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.player-info {
+  text-align: center;
+}
+
+.player-name {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-score {
+  font-size: 0.64rem;
+  color: #666;
+  margin-top: 1px;
+}
+
+.player-matches {
+  padding: 12px 8px;
+  border-top: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.matches-title {
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #666;
+}
+
+.matches-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.match-item {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* Mobile responsive */
+@media (max-width: 700px) {
+  .player-bar {
+    gap: 1.5px;
+    padding: 1.5px;
+  }
+
+  .player-card {
+    min-width: 74px;
+  }
+
+  .player-card-content {
+    padding: 4px 2px;
+  }
+
+  .player-name {
+    font-size: 0.76rem;
+  }
+
+  .player-score {
+    font-size: 0.62rem;
+    margin-top: 1px;
+  }
+
+  .player-matches {
+    padding: 4px 2px;
+  }
+
+  .match-item {
+    font-size: 0.95rem;
+  }
+}
