@@ -30,6 +30,8 @@ Visual indicators: difficulty cards show scaled emoji icons (small for Easy, lar
 - **Card Animations**: Smooth 3D flip transitions with color-coded borders and layered drop-shadows
 - **Win Screen**: Shows completion stats with "Play Again" (restart same config) and "Back to Menu" buttons
 - **Custom Confirmation Dialog**: Styled confirmation when abandoning an active game (no confirmation after game completion)
+- **Theme Toggle**: Switch between light, dark, and auto (system preference) themes with a button in the menu header
+- **Persistent Theme**: Theme preference is saved to localStorage and restored on page reload
 
 ### Multiplayer Features
 - **2–4 Players**: Player count capped by difficulty (max 2 on Easy, 3 on Medium, 4 on Hard)
@@ -50,6 +52,15 @@ The game automatically measures available screen space and:
 Menu screen scales all components to fit viewport without scrolling.
 
 ## Recent Updates
+
+### Design System (v2.1)
+- Minimal color scheme matching main site (aalokdeep.com)
+- Light mode: white backgrounds with dark gray accents (#333333)
+- Dark mode: near-black backgrounds with white accents
+- Manual theme toggle (⚙️ auto, ☀️ light, 🌙 dark) with localStorage persistence
+- Subtle gradients on buttons and cards using CSS `color-mix()`
+- All UI elements use CSS variables for consistent theming
+- Improved button hover states with proper color contrast
 
 ### Mobile Layout (v2.0)
 - Accurate board measurement via `getBoundingClientRect` with viewport fallback

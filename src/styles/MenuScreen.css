@@ -236,7 +236,7 @@
   font-size: 1rem;
   font-weight: bold;
   color: var(--background);
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 85%, black) 100%);
   border: none;
   border-radius: 10px;
   cursor: pointer;
