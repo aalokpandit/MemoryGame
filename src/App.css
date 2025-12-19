@@ -1,6 +1,41 @@
 /* src/App.css */
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
 
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --border: #e5e5e5;
+  --accent: #333333;
+  --accent-light: #f5f5f5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --border: #333333;
+    --accent: #ffffff;
+    --accent-light: #1a1a1a;
+  }
+}
+
+/* Manual theme overrides */
+html[data-theme="light"] {
+  --background: #ffffff;
+  --foreground: #171717;
+  --border: #e5e5e5;
+  --accent: #333333;
+  --accent-light: #f5f5f5;
+}
+
+html[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --border: #333333;
+  --accent: #ffffff;
+  --accent-light: #1a1a1a;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -9,13 +44,14 @@
 
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--background);
   height: 100dvh;
   margin: 0;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  color: var(--foreground);
 }
 
 .game-container {
@@ -25,7 +61,7 @@ body {
   height: 100dvh;
   width: 100vw;
   padding: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--background);
 }
 
 .game-header {
@@ -33,13 +69,13 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 5px 7px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--accent-light);
+  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 
 .game-header h1 {
-  color: #333;
+  color: var(--foreground);
   font-size: 1.2rem;
   margin: 0;
   flex: 1;
@@ -51,18 +87,19 @@ body {
   padding: 3.5px 7px;
   font-size: 0.78rem;
   font-weight: bold;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--accent);
+  color: var(--background);
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, opacity 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .back-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  opacity: 0.9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .back-button:active {
@@ -74,8 +111,8 @@ body {
   justify-content: center;
   gap: 18px;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--accent-light);
+  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 
@@ -87,7 +124,7 @@ body {
 
 .info-item .label {
   font-weight: bold;
-  color: #333;
+  color: var(--foreground);
   font-size: 0.95rem;
 }
 
@@ -95,7 +132,7 @@ body {
   font-family: 'Roboto Mono', 'Courier New', monospace;
   font-size: 1.1rem;
   font-weight: bold;
-  color: #667eea;
+  color: var(--accent);
   min-width: 40px;
   text-align: right;
 }
@@ -104,16 +141,16 @@ body {
   display: flex;
   justify-content: center;
   padding: 15px 20px;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--accent-light);
+  border-top: 1px solid var(--border);
   flex-shrink: 0;
 }
 
 h1 {
-  color: white;
+  color: var(--foreground);
   margin: 10px 0;
   font-size: 2rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: none;
 }
 
 
@@ -122,19 +159,19 @@ h1 {
   padding: 8px 24px;
   font-size: 1rem;
   font-weight: bold;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--accent);
+  color: var(--background);
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: 40px;
 }
 
 .action-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .action-button:active {
@@ -153,6 +190,7 @@ h1 {
   padding: 0;
   gap: 2px;
   min-height: 0;
+  background: var(--background);
 }
 
 .inline-banner {
@@ -160,22 +198,22 @@ h1 {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(255,255,255,0.92);
-  color: #333;
+  background: var(--accent-light);
+  color: var(--foreground);
   padding: 8px 12px;
   border-radius: 8px;
-  border: 2px solid #667eea;
+  border: 2px solid var(--border);
   font-weight: 600;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   pointer-events: none;
 }
 
 .player-name-input {
   width: 200px;
   text-align: center;
-  background: rgba(255,255,255,0.95);
-  border: 2px solid currentColor;
-  color: #333;
+  background: var(--background);
+  border: 2px solid var(--border);
+  color: var(--foreground);
   border-radius: 6px;
   height: 32px;
   font-weight: 600;
@@ -341,7 +379,8 @@ h1 {
 }
 
 .card-back {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: var(--accent-light);
+  border: 1px solid var(--border);
 }
 
 .win-overlay {
@@ -374,9 +413,10 @@ h1 {
   justify-content: center;
   gap: 20px;
   padding: 60px 80px;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--background);
+  border: 1px solid var(--border);
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   animation: scaleIn 0.3s ease-out;
 }
 
@@ -392,7 +432,7 @@ h1 {
 }
 
 .win-screen h2 {
-  color: #667eea;
+  color: var(--accent);
   font-size: 3rem;
   margin: 0;
 }
@@ -401,32 +441,32 @@ h1 {
   padding: 15px 30px;
   font-size: 1.2rem;
   font-weight: bold;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--accent);
+  color: var(--background);
   border: none;
   border-radius: 10px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .play-again-button {
   padding: 15px 30px;
   font-size: 1.2rem;
   font-weight: bold;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--accent);
+  color: var(--background);
   border: none;
   border-radius: 10px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .win-screen button:hover,
 .play-again-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .win-screen button:active,
@@ -448,19 +488,21 @@ h1 {
   padding: 15px 30px;
   font-size: 1.2rem;
   font-weight: bold;
-  background: rgba(255, 255, 255, 0.9);
-  color: #667eea;
-  border: 2px solid #667eea;
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 2px solid var(--border);
   border-radius: 10px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .menu-button:hover {
-  background: white;
+  background: var(--accent);
+  color: var(--background);
+  border-color: var(--accent);
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .menu-button:active {
@@ -473,13 +515,13 @@ h1 {
 
 .confirm-dialog h2 {
   font-size: 1.8rem;
-  color: #667eea;
+  color: var(--accent);
   margin-bottom: 12px;
 }
 
 .confirm-dialog p {
   font-size: 1rem;
-  color: #333;
+  color: var(--foreground);
   margin-bottom: 20px;
 }
 
@@ -498,17 +540,17 @@ h1 {
   border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .confirm-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--accent);
+  color: var(--background);
 }
 
 .confirm-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .confirm-button:active {
@@ -516,16 +558,16 @@ h1 {
 }
 
 .cancel-button {
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
-  border: 2px solid #ddd;
+  background: var(--accent-light);
+  color: var(--foreground);
+  border: 2px solid var(--border);
 }
 
 .cancel-button:hover {
-  background: white;
-  border-color: #999;
+  background: var(--background);
+  border-color: var(--accent);
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .cancel-button:active {

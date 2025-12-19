@@ -11,6 +11,11 @@ function App() {
   // Screen management
   const [screen, setScreen] = useState('menu'); // 'menu' | 'game'
 
+  // Theme management (light | dark | auto)
+  const [colorTheme, setColorTheme] = useState(() => {
+    return localStorage.getItem('colorTheme') || 'auto';
+  });
+
   // Game configuration (set by menu)
   const [mode, setMode] = useState('single'); // 'single' | 'multi'
   const [difficulty, setDifficulty] = useState('easy');
@@ -54,6 +59,26 @@ function App() {
       setActivePlayerIndex(0);
     }
   }, [maxPlayers]);
+
+  // Apply theme to document and persist to localStorage
+  useEffect(() => {
+    const html = document.documentElement;
+    if (colorTheme === 'auto') {
+      html.removeAttribute('data-theme');
+    } else {
+      html.setAttribute('data-theme', colorTheme);
+    }
+    localStorage.setItem('colorTheme', colorTheme);
+  }, [colorTheme]);
+
+  // Toggle theme function
+  const toggleTheme = () => {
+    setColorTheme((prev) => {
+      if (prev === 'light') return 'dark';
+      if (prev === 'dark') return 'auto';
+      return 'light';
+    });
+  };
 
   // Track board area so the grid can size to the actual container instead of the viewport
   useLayoutEffect(() => {
@@ -339,6 +364,8 @@ function App() {
     return (
       <MenuScreen 
         onStartGame={handleStartGame}
+        colorTheme={colorTheme}
+        onToggleTheme={toggleTheme}
       />
     );
   }

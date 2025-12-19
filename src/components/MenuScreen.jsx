@@ -3,7 +3,7 @@ import { THEMES } from '../data/themes';
 import { DIFFICULTIES } from '../constants/difficulties';
 import '../styles/MenuScreen.css';
 
-function MenuScreen({ onStartGame }) {
+function MenuScreen({ onStartGame, colorTheme = 'auto', onToggleTheme }) {
   const [mode, setMode] = useState('single');
   const [difficulty, setDifficulty] = useState('easy');
   const [theme, setTheme] = useState('animals');
@@ -59,6 +59,15 @@ function MenuScreen({ onStartGame }) {
       <div className="menu-header">
         <h1>Memory Game</h1>
         <p>Flip, match, and win!</p>
+        {onToggleTheme && (
+          <button 
+            className="theme-toggle-button" 
+            onClick={onToggleTheme}
+            title={`Current: ${colorTheme} theme`}
+          >
+            {colorTheme === 'light' ? '☀️' : colorTheme === 'dark' ? '🌙' : '⚙️'}
+          </button>
+        )}
       </div>
 
       <div className="menu-content">
