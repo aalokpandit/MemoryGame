@@ -278,9 +278,12 @@ function App() {
     setMoves(0);
     if (m === 'multi') {
       setIsPlayersLocked(true);
-      const first = Math.floor(Math.random() * playerCount);
+      // Use config values to ensure we have the correct player count and names
+      const pCount = cfg?.playerCount ?? playerCount;
+      const pNames = cfg?.playerNames ?? players.map(p => p.name);
+      const first = Math.floor(Math.random() * pCount);
       setActivePlayerIndex(first);
-      const firstName = players[first]?.name || `Player ${first + 1}`;
+      const firstName = pNames[first] || `Player ${first + 1}`;
       setBanner({ text: `${firstName} starts!` });
     } else {
       setIsPlayersLocked(false);

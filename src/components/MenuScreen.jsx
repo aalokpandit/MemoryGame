@@ -4,16 +4,55 @@ import { DIFFICULTIES } from '../constants/difficulties';
 import '../styles/MenuScreen.css';
 
 function MenuScreen({ onStartGame, colorTheme = 'auto', onToggleTheme }) {
-  const [mode, setMode] = useState('single');
-  const [difficulty, setDifficulty] = useState('easy');
-  const [theme, setTheme] = useState('animals');
-  const [playerCount, setPlayerCount] = useState(2);
-  const [playerNames, setPlayerNames] = useState([
-    'Player 1',
-    'Player 2',
-    'Player 3',
-    'Player 4',
-  ]);
+  const [mode, setMode] = useState(() => {
+    return sessionStorage.getItem('memoryGameMode') || 'single';
+  });
+  const [difficulty, setDifficulty] = useState(() => {
+    return sessionStorage.getItem('memoryGameDifficulty') || 'easy';
+  });
+  const [theme, setTheme] = useState(() => {
+    return sessionStorage.getItem('memoryGameTheme') || 'animals';
+  });
+  const [playerCount, setPlayerCount] = useState(() => {
+    const cached = sessionStorage.getItem('memoryGamePlayerCount');
+    return cached ? parseInt(cached, 10) : 2;
+  });
+  const [playerNames, setPlayerNames] = useState(() => {
+    // Try to load cached names from sessionStorage
+    const cached = sessionStorage.getItem('memoryGamePlayerNames');
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length === 4) {
+          return parsed;
+        }
+      } catch (e) {
+        // If parsing fails, use defaults
+      }
+    }
+    return ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
+  });
+
+  // Cache all settings whenever they change
+  useEffect(() => {
+    sessionStorage.setItem('memoryGameMode', mode);
+  }, [mode]);
+
+  useEffect(() => {
+    sessionStorage.setItem('memoryGameDifficulty', difficulty);
+  }, [difficulty]);
+
+  useEffect(() => {
+    sessionStorage.setItem('memoryGameTheme', theme);
+  }, [theme]);
+
+  useEffect(() => {
+    sessionStorage.setItem('memoryGamePlayerCount', playerCount.toString());
+  }, [playerCount]);
+
+  useEffect(() => {
+    sessionStorage.setItem('memoryGamePlayerNames', JSON.stringify(playerNames));
+  }, [playerNames]);
 
   const handleStartGame = () => {
     onStartGame({ mode, difficulty, theme, playerCount, playerNames });
