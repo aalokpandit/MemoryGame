@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
 
 :root {
-  --background: #ffffff;
+  --background: #FDFBF7;
   --foreground: #171717;
   --border: #e5e5e5;
   --accent: #333333;
@@ -21,7 +21,7 @@
 
 /* Manual theme overrides */
 html[data-theme="light"] {
-  --background: #ffffff;
+  --background: #FDFBF7;
   --foreground: #171717;
   --border: #e5e5e5;
   --accent: #333333;
@@ -45,23 +45,28 @@ html[data-theme="dark"] {
 body {
   font-family: Arial, sans-serif;
   background: var(--background);
-  height: 100dvh;
+  height: 100vh;
   margin: 0;
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   color: var(--foreground);
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .game-container {
   text-align: center;
   display: flex;
   flex-direction: column;
-  height: 100dvh;
-  width: 100vw;
+  flex: 1;
   padding: 0;
   background: var(--background);
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .game-header {

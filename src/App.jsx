@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo, useLayoutEffect, useRef } from 'react';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
 import MenuScreen from './components/MenuScreen';
 import Board from './components/Board';
 import PlayerBar from './components/PlayerBar';
@@ -365,16 +367,22 @@ function App() {
 
   if (screen === 'menu') {
     return (
-      <MenuScreen 
-        onStartGame={handleStartGame}
-        colorTheme={colorTheme}
-        onToggleTheme={toggleTheme}
-      />
+      <>
+        <Header />
+        <MenuScreen 
+          onStartGame={handleStartGame}
+          colorTheme={colorTheme}
+          onToggleTheme={toggleTheme}
+        />
+        <Footer />
+      </>
     );
   }
 
   return (
-    <div className="game-container">
+    <>
+      <Header />
+      <div className="game-container">
       <div className="game-header">
         <h1>Memory Game</h1>
         <div className="header-actions">
@@ -460,7 +468,9 @@ function App() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+      <Footer />
+    </>
   );
 }
 
