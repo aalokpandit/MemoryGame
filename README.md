@@ -1,197 +1,107 @@
 # Memory Game
 
-A fully responsive, feature-rich memory card matching game built with React and Vite. Optimized for mobile and desktop with adaptive layouts and dynamic sizing.
+A responsive emoji memory card matching game built with React and Vite, deployed at [memorygame.aalokdeep.com](https://memorygame.aalokdeep.com). Supports Single Player and 2–4 player local Multiplayer across desktop and mobile viewports.
 
 ## Features
 
 ### Game Modes
-- **Single Player**: Solo play with move counter and timer
-- **Multiplayer**: 2–4 players with turn-taking, color-coded panels, and match tracking
+- **Single Player**: Solo play with a move counter and elapsed timer.
+- **Multiplayer**: 2–4 local players with custom names, color-coded player panels, turn tracking, and winner/tie detection.
 
 ### Themes
-Choose from 4 unique themes with 32 emojis each:
+4 themes with 32 emojis each (128 total, defined in `src/data/themes.js`):
 - **Animals** 🐶
 - **Fruits & Vegetables** 🍎
 - **Vehicles & Transportation** 🚗
-- **Everyday Objects** 📚
+- **Everyday Objects** 📚 *(displayed as `EverydayObjects` in the menu UI)*
 
 ### Difficulty Levels
 - **Easy**: 4×4 grid (8 pairs)
 - **Medium**: 6×6 grid (18 pairs)
 - **Hard**: 8×8 grid (32 pairs)
 
-Visual indicators: difficulty cards show scaled emoji icons (small for Easy, large for Hard) to represent relative game size.
+Difficulty cards render scaled `⊞` (`U+229E`) box symbols representing grid size.
 
-### Gameplay Features
-- **Adaptive Grid**: Cards scale dynamically based on available screen space with intelligent gap distribution
-- **Mobile Optimized**: 8×8 grid fits on mobile screens (portrait and landscape) without scrolling
-- **Move Counter**: Tracks pair attempts (one flip = one move)
-- **Timer**: Starts on first card flip and runs until game completion
-- **Card Animations**: Smooth 3D flip transitions with color-coded borders and layered drop-shadows
-- **Win Screen**: Shows completion stats with "Play Again" (restart same config) and "Back to Menu" buttons
-- **Custom Confirmation Dialog**: Styled confirmation when abandoning an active game (no confirmation after game completion)
-- **Theme Toggle**: Switch between light, dark, and auto (system preference) themes with a button in the menu header
-- **Persistent Theme**: Theme preference is saved to localStorage and restored on page reload
-
-### Multiplayer Features
-- **2–4 Players**: Player count capped by difficulty (max 2 on Easy, 3 on Medium, 4 on Hard)
-- **Custom Names**: Each player enters a name (up to 12 characters) before starting
-- **Turn System**: Random starting player; matching keeps turn, missing passes to next
-- **Player Panels**: Color-coded panels show current player, match counts, and matched items (expandable)
-- **Winner Detection**: Highest match count wins; handles ties and displays all winners
-
-## Mobile Optimization
-
-The game automatically measures available screen space and:
-- Shrinks cards as needed (down to 2px minimum) to fit dense grids
-- Adds breathing room between cards when space permits (dynamic gap calculation)
-- Centers the grid vertically and horizontally
-- Compresses header, buttons, and player info on short screens
-- Eliminates horizontal/vertical scrolling during gameplay
-
-Menu screen scales all components to fit viewport without scrolling.
-
-## Recent Updates
-
-### Design System (v2.1)
-- Minimal color scheme matching main site (aalokdeep.com)
-- Light mode: white backgrounds with dark gray accents (#333333)
-- Dark mode: near-black backgrounds with white accents
-- Manual theme toggle (⚙️ auto, ☀️ light, 🌙 dark) with localStorage persistence
-- Subtle gradients on buttons and cards using CSS `color-mix()`
-- All UI elements use CSS variables for consistent theming
-- Improved button hover states with proper color contrast
-
-### Mobile Layout (v2.0)
-- Accurate board measurement via `getBoundingClientRect` with viewport fallback
-- Dynamic gap calculation distributes leftover space evenly between cards
-- Grid centers on screen for better visual balance
-- Flex containers with proper `min-height`/`min-width` guards for correct shrinking
-- Menu screen scales padding/fonts/gaps to eliminate scrolling
-
-### UX Improvements
-- Play Again button restarts current game instead of returning to menu
-- Separate "Back to Menu" button on win screen
-- Custom styled confirmation dialog replaces browser's `confirm()`
-- No confirmation prompt when returning to menu after game completion
-- Difficulty cards show visually scaled icons matching grid size
-
-### Code Quality
-- Moved large constants and utilities out of main component
-- Stable win detection with proper dependency tracking
-- Safer card click handling with guard conditions
-- Centralized player panel CSS classes
-- Optimized re-renders with React.memo() and proper effect dependencies
+### Gameplay & UI Details
+- **Adaptive Grid Sizing**: Uses `ResizeObserver`, `window.resize`, and `requestAnimationFrame` on `.board-area` (with viewport fallbacks) to dynamically calculate card sizes (down to `2px`, fallback `80px`) and extra gap distribution (`baseGap` + up to `+2.5px`) so even `8×8` fits without page scrolling.
+- **Move Counter**: One move = one pair attempt (`2` card flips). Moves are tracked internally in both modes and displayed only in Single Player.
+- **Timer**:
+  - **Single Player**: Starts on the first card flip and ticks every second until all pairs match.
+  - **Multiplayer**: Starts immediately when the game begins; hidden during play and shown on the Game Over modal as `Total Time: MM:SS`.
+- **Header Controls**: `← Back to Menu` shows a custom styled confirmation dialog while a game is in progress (skipped after completion). `↻ Restart` restarts immediately with the same settings without a confirmation prompt.
+- **Theme Toggle**: Menu-only header button cycling `auto` (system preference) → `light` → `dark`, persisted in `localStorage['colorTheme']` via `data-theme` on `<html>`.
+- **Menu Persistence**: `MenuScreen` persists `mode`, `difficulty`, `theme`, `playerCount`, and `playerNames` in `sessionStorage`.
+- **Multiplayer Rules**:
+  - Selecting `3` players disables **Easy** (bumping to Medium); selecting `4` players disables **Easy** and **Medium** (bumping to Hard).
+  - Random starting player; matching keeps the turn and adds the matched card's text name (e.g., `"Dog"`) to the player's expandable panel; missing locks the board for `1000ms` and passes the turn.
+  - Highest match count wins (handles multi-way ties).
 
 ## Getting Started
 
-### Installation
+### Prerequisites
+- Node.js (CI uses Node `20`) and `npm`
+
+### Commands (Run from `c:\Projects\MemoryGame`)
 
 ```bash
-npm install
+npm install               # Install dependencies
+npm run dev               # Start Vite dev server
+npm run dev -- --host     # Expose dev server on LAN for mobile testing
+npm run build             # Production build into dist/
+npm run preview           # Preview dist/ locally
+npm run lint              # Run ESLint (eslint .)
 ```
 
-### Development
+## Tech Stack & Project Structure
 
-```bash
-npm run dev
+- **UI:** React `^19.2.0`, Vite `^7.2.4`, plain CSS3 (Flexbox, Grid, `100dvh`, `container-type: size` / `60cqw`, `color-mix()`), Google Fonts `Roboto Mono` (imported in `src/App.css`)
+- **Linting:** ESLint `^9.39.1` (`eslint.config.js` with `eslint-plugin-react-hooks` `^7.0.1` & `eslint-plugin-react-refresh`)
+
+```text
+MemoryGame/
+├── index.html
+├── package.json
+├── vite.config.js
+├── eslint.config.js
+├── public/
+│   ├── favicon.png
+│   └── emoji-test.html         # Static 128-emoji verification page (served at /emoji-test.html)
+├── src/
+│   ├── main.jsx
+│   ├── App.jsx / App.css       # Core game state, ResizeObserver sizing, timer, modals
+│   ├── components/
+│   │   ├── MenuScreen.jsx      # Menu config + sessionStorage persistence + theme toggle
+│   │   ├── Board.jsx           # CSS Grid board
+│   │   ├── Card.jsx            # 3D flip card with inverted-RGB tint border
+│   │   ├── PlayerBar.jsx       # Expandable multiplayer panels
+│   │   ├── Confetti.jsx        # Unused legacy component
+│   │   └── Timer.jsx           # Unused legacy component (logic lives in App.jsx)
+│   ├── constants/difficulties.js
+│   ├── data/themes.js
+│   ├── styles/                 # MenuScreen.css, PlayerBar.css
+│   └── utils/cards.js          # Card generation & Fisher-Yates shuffle
+└── .github/
+    ├── dependabot.yml          # Weekly security updates (open-pull-requests-limit: 0)
+    └── workflows/
+        └── azure-static-web-apps-gray-dune-042910710.yml
 ```
 
-For mobile testing with network access:
+## CI/CD & Deployment
 
-```bash
-npm run dev -- --host
-```
+- **Azure Static Web Apps:** `.github/workflows/azure-static-web-apps-gray-dune-042910710.yml` builds with `npm run build` on Node `20` and deploys `dist/` (`skip_deploy_on_missing_secrets: true`).
+- **PR Previews:** Pull requests run the SWA workflow (skipping deployment when secrets are absent) and close preview slots when PRs close. Note: CI does not run `npm run lint` or tests (no test suite is configured).
+- **Dependabot:** `.github/dependabot.yml` sets `open-pull-requests-limit: 0` so only security updates open PRs.
 
-### Build
+## Emoji Compatibility & `public/emoji-test.html`
 
-```bash
-npm run build
-```
+- `public/emoji-test.html` lists all 128 emojis across the 4 themes for cross-platform glyph verification. Because it resides in `public/`, Vite copies it into `dist/` and it is publicly accessible at `/emoji-test.html`.
+- It is maintained manually alongside `src/data/themes.js` — any emoji edits in `themes.js` should be mirrored in `public/emoji-test.html`.
 
-### Preview Production Build
+## Implementation Notes & Known Quirks
 
-```bash
-npm run preview
-```
-
-## How to Play
-
-### Single Player
-1. Choose difficulty level and theme from the menu
-2. Click "Start Game"
-3. Flip cards by clicking to find matching pairs
-4. Timer starts on first flip
-5. Complete all pairs to see your time and move count
-6. Click "Play Again" to restart or "Back to Menu" to change settings
-
-### Multiplayer
-1. Select "Multiplayer" mode
-2. Choose number of players (2–4, based on difficulty)
-3. Enter player names
-4. Select difficulty and theme
-5. Click "Start Game" - a random player starts
-6. Match pairs to keep your turn; miss to pass
-7. Player with most matches wins!
-
-## Technologies
-
-- **React** 19.2.0 - UI library with hooks and memo optimization
-- **Vite** 7.2.4 - Fast build tool and dev server
-- **CSS3** - Grid, Flexbox, container queries, animations, and responsive design
-- **Google Fonts** - Roboto Mono for timer/counter display
-
-## Project Structure
-
-```
-src/
-├── App.jsx                    # Main game logic and state
-├── App.css                    # Game screen styles
-├── main.jsx                   # React entry point
-├── components/
-│   ├── MenuScreen.jsx         # Menu UI and configuration
-│   ├── Board.jsx              # Dynamic grid layout with measured sizing
-│   ├── Card.jsx               # Card flip component
-│   └── PlayerBar.jsx          # Multiplayer panel display
-├── styles/
-│   ├── MenuScreen.css         # Menu responsive styles
-│   └── PlayerBar.css          # Player panel styles
-├── data/
-│   └── themes.js              # Theme emoji sets and colors
-├── constants/
-│   └── difficulties.js        # Grid sizes and pair counts
-└── utils/
-    └── cards.js               # Card generation and Fisher-Yates shuffle
-```
-
-## Browser Support
-
-- Modern browsers with ES6+ support
-- Tested on Chrome, Firefox, Safari, Edge
-- Mobile browsers: iOS Safari, Chrome Mobile, Samsung Internet
-- Uses `100dvh` for accurate mobile viewport height
-
-## License
-
-MIT
-
-## Development
-
-Start a local dev server:
-
-```powershell
-cd c:\Projects\MemoryGame\memory-game
-npm run dev -- --host --port 5173
-```
-
-If port 5173 is busy, Vite will pick another port and report it in the terminal.
-
-## Emoji Compatibility & Testing
-
-- All 128 emojis are verified in the browser for the current theme sets. If you switch browsers or platforms and see missing glyphs, open [public/emoji-test.html](public/emoji-test.html) to spot any unsupported emojis.
-- Theme coverage (32 each): Animals; Fruits & Veggies; Vehicles; Objects. See [src/data/themes.js](src/data/themes.js) for the current mappings.
-- If any emoji shows as a rectangle or question mark, replace it with an older, widely supported emoji and re-run the test page.
-
-## License
-
-This project is open source and available under the MIT License.
+- **Difficulty lock leak from Multiplayer:** `MenuScreen.jsx`'s `isDifficultyDisabled()` checks `playerCount` without checking `mode === 'multi'`, so choosing 3–4 players in Multiplayer leaves lower difficulties disabled if you switch back to Single Player in the same session.
+- **Initial Multiplayer Banner:** The `"<Name> starts!"` banner has no auto-dismiss timeout and remains visible (`pointer-events: none`) until the first pair attempt triggers a `1200ms` timed banner.
+- **Uncleaned Timeouts:** Mismatch (`1000ms`) and banner (`1200ms`) timeouts in `App.jsx` are not cleared if `Restart` or `Back to Menu` is clicked mid-turn.
+- **Dead Code & CSS Overlap:** `Confetti.jsx`, `Timer.jsx`, `panelEffect`/`getPanelClass`/`isPlayersLocked` in `App.jsx`, and unused classes in `App.css` remain in the repo. `.player-name-input` is defined in both `App.css` and `MenuScreen.css`.
+- **Accessibility & Lint Baseline:** Cards render as clickable `<div>` elements without `role="button"`/`tabIndex`/keyboard handlers, modals lack `role="dialog"`/`Escape` handling, and `npm run lint` currently reports `eslint-plugin-react-hooks` v7 errors (`set-state-in-effect`, unused vars, and `Confetti.jsx` syntax).
+- **License:** No `LICENSE` file or `"license"` field in `package.json` is currently present in the repository.
